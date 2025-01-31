@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mine Viewer</title>
+      <style>
+        @font-face {
+          font-family: Philosopher;
+          src: url(./assets/Philosopher-Regular.ttf)
+        }
+        body {
+          font-family: Philosopher;
+          color: #223495;
+        }
+        .app {
+            margin-bottom: 100px;
+        }
+        .nav {
+            max-width: 600px;
+            display: flex;
+            flex-direction: row;
+            margin: 0 auto;
+        }
+        .nav > *:last-child {
+            margin-left: auto;
+            margin-bottom: 50px;
+        }
+        .nav-item {
+            background-color: rgb(255, 255, 255);
+            border: 5px solid rgb(255, 255, 255);
+            box-shadow: 0 0 0 7px rgb(146, 0, 0);
+            max-width: 17px;
+            max-height: 17px;
+            min-width: 17px;
+            min-height: 17px;
+            margin: 15px;
+        }
+        .nav-item.current {
+            background-color: rgb(146, 0, 0);
+        }
+        .nav-item:hover {
+            cursor: pointer;
+        }
+        .content {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          align-content: center;
+        }
+        .content * {
+            margin: 10px;
+        }
+        .view-list-item {
+          display: flex;
+          flex-direction: row;
+        }
+        .view-list-item img {
+            max-width: 200px;
+            max-height: 200px;
+            min-width: 200px;
+            min-height: 200px;
+        }
+        .view-list-item:hover {
+          border: 1px solid red;
+        }    
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <div class ="nav">
+        <div id="it" class="nav-item"></div>
+        <div id="zbrush" class="nav-item"></div>
+        <div id="arch" class="nav-item"></div>
+        <div id="drawings" class="nav-item"></div>
+        <div id="me" class="nav-item"></div>
+      </div>
+      <div class="content"></div>
+      <div class="footer"></div>
+    </div>
+    <script type="module" src="main.js"></script>
+  </body>
+</html>
