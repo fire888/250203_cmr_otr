@@ -12,6 +12,10 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
+app.get('/edit', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index-edit.html'));
+});
+
 // Запуск
 app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);

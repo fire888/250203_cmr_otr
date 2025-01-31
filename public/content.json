@@ -1,6 +1,7 @@
 {
     "nodes": [
         {
+            "title": "AAA",
             "id": "000",
             "isPublished": true,
             "preview": { "imgSrc": "./files/_qKvMDUyINI.jpg" },
@@ -18,6 +19,7 @@
         },
         {
             "id": "001",
+            "title": "BBB",
             "isPublished": true,
             "preview": { "imgSrc": "./files/0Ndha9CU5oc.jpg" },
             "tags": ["zbrush"],
@@ -30,6 +32,7 @@
         },
         {
             "id": "002",
+            "title": "CCCC",
             "isPublished": true,
             "preview": { "text": "AAAAAAAA" },
             "tags": ["zbrush"],
@@ -38,5 +41,8 @@
                 { "type": "text", "html": "text text bbbb" }
             ]
         }
-    ]
+    ],
+    "tags": [
+        "zbrush"
+    ] 
 }

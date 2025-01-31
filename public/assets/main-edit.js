@@ -120,7 +120,6 @@ const drawPreviewNode = async (nodeId) => {
     })
 }
 
-
 const drawNode = async (nodeId) => {
     clearContent()
     
