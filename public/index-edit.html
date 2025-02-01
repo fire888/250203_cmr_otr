@@ -17,38 +17,9 @@
         .app {
             margin-bottom: 100px;
         }
-        .nav {
-            max-width: 600px;
-            display: flex;
-            flex-direction: row;
-            margin: 0 auto;
-        }
-        .nav > *:last-child {
-            margin-left: auto;
-            margin-bottom: 50px;
-        }
-        .nav-item {
-            background-color: rgb(255, 255, 255);
-            border: 5px solid rgb(255, 255, 255);
-            box-shadow: 0 0 0 7px rgb(146, 0, 0);
-            max-width: 17px;
-            max-height: 17px;
-            min-width: 17px;
-            min-height: 17px;
-            margin: 15px;
-        }
-        .nav-item.current {
-            background-color: rgb(146, 0, 0);
-        }
-        .nav-item:hover {
-            cursor: pointer;
-        }
         .content {
           display: flex;
           flex-direction: column;
-          justify-content: center;
-          align-items: center;
-          align-content: center;
         }
         .content * {
             margin: 10px;
@@ -58,19 +29,31 @@
           flex-direction: row;
         }
         .view-list-item img {
-            max-width: 200px;
-            max-height: 200px;
-            min-width: 200px;
-            min-height: 200px;
+            max-width: 100px;
+            max-height: 100px;
+            min-width: 100px;
+            min-height: 100px;
         }
         .view-list-item:hover {
           border: 1px solid red;
           cursor: pointer;
-        }    
+        }
+        .edit-node {
+          display: flex;
+          flex-direction: column; 
+          border: #223495 1px solid;
+          margin: 5px;            
+        }
+        .edit-node > * {
+            margin: 5px;
+            max-width: 400px;
+        }
     </style>
   </head>
   <body>
-    AAAAAAAAA
+    <button class="add-new-node">[+] add node</button>
+    <div class="edit-node"></div>
+    <div class="content"></div>
     <script type="module" src="./assets/main-edit.js"></script>
   </body>
 </html>

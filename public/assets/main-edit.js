@@ -182,21 +182,143 @@ const redirectToAndDrawPage = async (type, id) => {
     }
 }
 
-document.addEventListener('DOMContentLoaded', async () => {
-    const links = document.querySelectorAll('.nav-item') 
-    links.forEach((link) => {
-        link.addEventListener('click', () => {
-            links.forEach((link) => {
-                link.classList.remove('current')
-            })
-            link.classList.add('current')
-            redirectToAndDrawPage('list', link.id)
-        })
+const addNewNode = async (nodeId = null) => {
+    const nodeData = {
+        "id": Math.floor(Math.random() * 1000000) + "_",
+        "title": null,
+        "isPublished": true,
+        "preview": { "imgSrc": null, "text": null },
+        "tags": [],
+        "raiting": 0,
+        "content": [
+            // { "type": "text", "html": "text text AAAAAAAAa" },
+            // { "type": "img", "src": "./files/0Ndha9CU5oc.jpg" },
+            // { "type": "text", "html": "text text AAAAAAAAa" }
+        ]
+    }
+
+
+    document.querySelector('.add-new-node').style.display = 'none'
+    const wrapper = document.querySelector('.edit-node')
+    console.log('click')
+
+    const close = document.createElement('button')
+    close.innerText = 'cancel'
+    close.addEventListener('click', () => {
+        document.querySelector('.add-new-node').style.display = 'block'
+        wrapper.innerHTML = ''
     })
+    wrapper.appendChild(close)
+
+    const raiting = document.createElement('input')
+    raiting.type = 'text'
+    raiting.placeholder = 'raiting'
+    wrapper.appendChild(raiting)
+
+    const title = document.createElement('input')
+    title.type = 'text'
+    title.placeholder = 'title'
+    wrapper.appendChild(title)
+
+    const wrIsPublished = document.createElement('div')
+    const checkbox = document.createElement('input')
+    checkbox.type = 'checkbox'
+    checkbox.checked = true
+    wrIsPublished.appendChild(checkbox);
+    const label = document.createElement('label')
+    label.textContent = 'isPublished'
+    wrIsPublished.appendChild(label)
+    wrapper.appendChild(wrIsPublished)
+
+    const previewText = document.createElement('input')
+    previewText.type = 'text'
+    previewText.placeholder = 'previewText'
+    wrapper.appendChild(previewText)
+
+    let arrTagsInput = []
+    const tagsWrapper = document.createElement('div')
+    wrapper.appendChild(tagsWrapper)
+
+    const addTagList = () => {
+        const wr = document.createElement('div')
+        tagsWrapper.appendChild(wr)
+
+        const select = document.createElement('select')
+        select.id = Math.floor(Math.random() * 1000) + '_dynamicSelect'
+        for (let i = 0; i < appData.tags.length; i++) {
+            const option = document.createElement('option')
+            option.value = appData.tags[i]
+            option.textContent = appData.tags[i]
+            select.appendChild(option)
+        }
+        wr.appendChild(select)
+    
+        select.addEventListener('change', () => {
+          console.log('Выбрано значение:', select.value)
+        })
+
+        const remove = document.createElement('button')
+        remove.innerText = 'remove'
+        remove.addEventListener('click', () => {
+            wr.removeChild(select)
+            wr.removeChild(remove)
+        })
+        wr.appendChild(remove)
+    }
+
+    const createButtAddTag = document.createElement('button')
+    createButtAddTag.innerText = 'add tag'
+    createButtAddTag.addEventListener('click', () => addTagList())
+    wrapper.appendChild(createButtAddTag)
+
+    const contentWrapper = document.createElement('div')
+    wrapper.appendChild(contentWrapper)
+
+    const createElementText = () => {
+        const wr = document.createElement('div')
+        contentWrapper.appendChild(wr)
+
+        const txt = document.createElement('input')
+        txt.type = 'text'
+        txt.placeholder = 'content text'
+        wr.appendChild(txt)
+
+        const remove = document.createElement('button')
+        remove.innerText = 'remove'
+        remove.addEventListener('click', () => {
+            wr.removeChild(txt)
+            wr.removeChild(remove)
+        })
+        wr.appendChild(remove)
+    }
+
+    const createButtAddText = document.createElement('button')
+    createButtAddText.innerText = 'add content text'
+    createButtAddText.addEventListener('click', () => createElementText())
+    wrapper.appendChild(createButtAddText)
+
+    const save = document.createElement('button')
+    save.innerText = 'save'
+    save.addEventListener('click', () => {
+        console.log('save')
+    })
+    wrapper.appendChild(save)
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
     const data = await loadJson()
     appData = data
 
-    redirectToAndDrawPage()
+    const wrapper = document.querySelector('.content')
+    const nodesSort = appData.nodes.sort((a, b) => a.raiting - b.raiting)
+
+    for (let i = 0; i < nodesSort.length; i++) {
+        drawPreviewNode(nodesSort[i].id)
+    }
+
+    document.querySelector('.add-new-node').addEventListener('click', () => addNewNode(null)) 
+
+    //redirectToAndDrawPage()
 })
 
 window.addEventListener('popstate', (event) => {
