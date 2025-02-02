@@ -50,16 +50,12 @@ const checkParamsUrl = () => {
     const urlParams = new URLSearchParams(queryString)
     const data = {
         nodeId: null,
-        mode: null,
         listId: null, 
     }
     for (const [key, value] of urlParams.entries()) {
         console.log(key, value);
         if (key === 'node') {
             data.nodeId = value
-        }
-        if (key === 'mode') {
-            data.mode = value
         }
         if (key === 'list') {
             data.listId = value
@@ -82,12 +78,7 @@ const OW = 50 // offsetW
 // app data
 let appData = null
 
-const clearContent = () => {
-    const wrapper = document.querySelector('.content')
-    wrapper.innerHTML = ''
-    window.scrollTo(0, 0)
-} 
-
+/** elements node ******************************** */
 const drawImage = async (src, wrapper) => {
     return new Promise(res => {
         const img = document.createElement('img')
@@ -106,7 +97,6 @@ const drawImage = async (src, wrapper) => {
         }
     })
 }
-
 const drawText = (text, wrapper, size = 16) => {
     const p = document.createElement("p")
     p.innerHTML= text
@@ -121,7 +111,7 @@ const drawText = (text, wrapper, size = 16) => {
     }
     wrapper.appendChild(p)
 }
-
+/** node ********************************** */
 const drawPreviewNode = async (nodeId) => {    
     const node = appData.nodes.find(node => node.id === nodeId)
     if (!node) {
@@ -150,10 +140,10 @@ const drawPreviewNode = async (nodeId) => {
         redirectToAndDrawPage('node', nodeId)
     })
 }
-
 const drawNode = async (nodeId) => {
-    clearContent()
-    
+    const addNewNodeButton = document.querySelector('.add-new-node')
+    addNewNodeButton.style.display = 'none'  
+
     const node = appData.nodes.find(node => node.id === nodeId)
     if (!node) {
         console.log('node not found:' + nodeId)
@@ -166,9 +156,31 @@ const drawNode = async (nodeId) => {
         console.log('node content not found:' + nodeId)
         return;
     }
-
     console.log('nodecontent', nodeId, node.content)
+
+
     const wrapper = document.querySelector('.content')
+
+    const data = document.createElement('div')
+    data.classList.add('code')
+    data.innerHTML = JSON.stringify(node, null, 2) // node
+    wrapper.appendChild(data)
+
+    const edit = document.createElement('button')
+    edit.innerHTML = 'edit'
+    wrapper.appendChild(edit)
+    edit.addEventListener('click', async () => {
+        wrapper.removeChild(edit)
+        formsEditNode(nodeId)
+    })
+    const del = document.createElement('button')
+    del.innerHTML = 'delete'
+    wrapper.appendChild(del)
+    del.addEventListener('click', async () => {
+        appData.nodes = appData.nodes.filter(n => n.id !== nodeId)
+        await postDataToServer(appData)
+        redirectToAndDrawPage()
+    })
 
     for (let i = 0; i < node.content.length; i++) {
         if (node.content[i].type === 'img') {
@@ -180,31 +192,46 @@ const drawNode = async (nodeId) => {
         }
     }
 }
-
+/** list ********************************************************** */
 const drawList = async (listId) => {
-    clearContent()
-    const nodes = appData.nodes.filter(e => {
-        if (!e.tags) {
-            return false;
-        }
-        const is = e.tags.find(t => t === listId)
-        return !!is
-    })
+    const addNewNodeButton = document.querySelector('.add-new-node')
+    addNewNodeButton.style.display = 'block'  
 
+    let nodes
+    if (listId) { 
+        nodes = appData.nodes.filter(e => {
+            const is = e.tags.find(t => t === listId)
+            return !!is
+        })
+    } else {
+        nodes = appData.nodes
+    }
+    nodes = nodes.sort((a, b) => b.raiting - a.raiting)
     for (let i = 0; i < nodes.length; i++) {
         await drawPreviewNode(nodes[i].id) 
     }
 }
+/** reset page ********************************************/
+const redirectToAndDrawPage = async (type = null, id = null) => {
+    const wrapperEdit = document.querySelector('.edit-node')
+    wrapperEdit.innerHTML = ''
+    const wrapper = document.querySelector('.content')
+    wrapper.innerHTML = ''
+    window.scrollTo(0, 0)
 
-const redirectToAndDrawPage = async (type, id) => {
+    const data = await loadJson()
+    appData = data
+
     if (type && id) {
-        window.history.pushState(
-            { someData: 123 },
-            '',                     
-            `?${type}=${id}`
-        );
+        window.history.pushState({ someData: 123 }, '', `?${type}=${id}`)
+    } else {
+        window.history.pushState({ someData: 123 }, '', '?')
     }
+
     const params = checkParamsUrl()
+    if (!params.nodeId && !params.listId) {
+        await drawList(null)
+    }
     if (params.nodeId) {
         await drawNode(params.nodeId)
     }
@@ -213,16 +240,23 @@ const redirectToAndDrawPage = async (type, id) => {
     }
 }
 
-const addNewNode = async (nodeId = null) => {
-    const nodeData = {
-        "id": Math.floor(Math.random() * 1000000) + "_",
-        "title": null,
-        "isPublished": true,
-        "preview": { "imgSrc": null, "text": null },
-        "tags": [],
-        "raiting": 0,
-        "content": []
-    }
+/** edit *********************************************************** */
+const formsEditNode = async (nodeId = null) => {
+    console.log('&&&& edit', nodeId)
+    let nodeData = null
+    if (!nodeId) {
+        nodeData = {
+            "id": Math.floor(Math.random() * 1000000) + "_",
+            "title": null,
+            "isPublished": true,
+            "preview": { "imgSrc": null, "text": null },
+            "tags": [],
+            "raiting": 0,
+            "content": []
+        }
+    } else {
+        nodeData = appData.nodes.find(node => node.id === nodeId)
+    } 
 
 
     document.querySelector('.add-new-node').style.display = 'none'
@@ -231,14 +265,14 @@ const addNewNode = async (nodeId = null) => {
     const close = document.createElement('button')
     close.innerText = 'cancel'
     close.addEventListener('click', () => {
-        document.querySelector('.add-new-node').style.display = 'block'
-        wrapper.innerHTML = ''
+        redirectToAndDrawPage()
     })
     wrapper.appendChild(close)
 
     const raiting = document.createElement('input')
     raiting.type = 'text'
     raiting.placeholder = 'raiting'
+    raiting.value = nodeData.raiting
     raiting.addEventListener('change', () => {
         nodeData.raiting = raiting.value
     })
@@ -247,6 +281,7 @@ const addNewNode = async (nodeId = null) => {
     const title = document.createElement('input')
     title.type = 'text'
     title.placeholder = 'title'
+    title.value = nodeData.title
     title.addEventListener('change', () => {
         nodeData.title = title.value
     })
@@ -255,7 +290,7 @@ const addNewNode = async (nodeId = null) => {
     const wrIsPublished = document.createElement('div')
     const checkbox = document.createElement('input')
     checkbox.type = 'checkbox'
-    checkbox.checked = true
+    checkbox.checked = nodeData.isPublished
     checkbox.addEventListener('change', () => {
         nodeData.isPublished = checkbox.checked
     })
@@ -268,6 +303,7 @@ const addNewNode = async (nodeId = null) => {
     const previewText = document.createElement('input')
     previewText.type = 'text'
     previewText.placeholder = 'previewText'
+    previewText.value = nodeData.preview.text
     previewText.addEventListener('change', () => {
         nodeData.preview.text = previewText.value
     })
@@ -295,7 +331,7 @@ const addNewNode = async (nodeId = null) => {
             const remove = document.createElement('button')
             remove.innerText = 'remove'
             remove.addEventListener('click', () => {
-                tagsSet .delete(value)
+                tagsSet.delete(value)
                 t.removeChild(v)
                 t.removeChild(remove)
                 nodeData.tags = [...tagsSet ]
@@ -385,33 +421,29 @@ const addNewNode = async (nodeId = null) => {
     save.innerText = 'save'
     save.addEventListener('click', async () => {
         console.log('save', nodeData)
-        appData.nodes.splice(0, 0, nodeData)
+        if (!nodeId) {
+            appData.nodes.splice(0, 0, nodeData)
+        } else {
+            let index = null
+            for (let i = 0; i < appData.nodes.length; i++) {
+                if (appData.nodes[i].id === nodeId) {
+                    index = i
+                }
+            }
+            appData.nodes[index] = nodeData
+        }
+
         await postDataToServer(appData)
-        //redirectToAndDrawPage('node', nodeData.id)
         document.querySelector('.edit-node').innerHTML = ''
-        updateFullApp()
+        redirectToAndDrawPage()
     })
     wrapper.appendChild(save)
 }
 
-const updateFullApp = async () => {
-    // clear Prev
-    const wrapper = document.querySelector('.content')
-    wrapper.innerHTML = ''
-
-    const data = await loadJson()
-    appData = data
-    const nodesSort = appData.nodes.sort((a, b) => a.raiting - b.raiting)
-    for (let i = 0; i < nodesSort.length; i++) {
-        drawPreviewNode(nodesSort[i].id)
-    }
-    const addNewNodeButton = document.querySelector('.add-new-node')
-    addNewNodeButton.style.display = 'block'  
-}  
 
 document.addEventListener('DOMContentLoaded', async () => { 
-    await updateFullApp()
-    document.querySelector('.add-new-node').addEventListener('click', () => addNewNode(null)) 
+    await redirectToAndDrawPage()
+    document.querySelector('.add-new-node').addEventListener('click', () => formsEditNode(null)) 
 })
 
 window.addEventListener('popstate', (event) => {

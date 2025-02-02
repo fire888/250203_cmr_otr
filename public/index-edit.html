@@ -49,10 +49,12 @@
             max-width: 400px;
         }
         .code {
-            font-family: 'Courier New', Courier, monospace;
+            font-family: monospace;
             background: #f4f4f4;
             padding: 2px 4px;
             border-radius: 4px;
+            white-space: pre-wrap;       /* Preserve whitespace but allow wrapping */
+            word-wrap: break-word;       /* Break long words to avoid horizontal scroll */
         }
     </style>
   </head>
