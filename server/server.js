@@ -78,6 +78,21 @@ app.post('/api/upload-image', upload.single('file'), (req, res) => {
   })
 })
 
+app.post('/api/delete-image', async (req, res) => {
+  console.log(req.body)
+  const { fileName } = req.body
+  fs.unlink('./public/images/' + fileName, (err) => {
+      console.log('Колбэк fs.unlink вызван!');
+    
+      if (err) {
+        console.error('Ошибка при удалении:', err);
+        return; 
+      }
+      console.log('Файл удалён успешно.');
+  })
+  res.sendStatus(200)
+})
+
 // Запуск
 app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);

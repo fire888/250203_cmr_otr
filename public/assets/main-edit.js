@@ -58,8 +58,27 @@ const postFileToServer = (data) => {
             alert('Upload failed!');
           });
     })
-} 
+}
 
+const deleteFileFromServer = async (fileName) => {
+    const response = await fetch(url + '/api/delete-image', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ fileName })
+    });
+  
+    console.log('HHHHH on remove', response)
+    if (!response.ok) {
+
+      throw new Error('Network response was not ok: ' + response.status);
+    }
+  
+    const data = await response.json();
+    console.log('Delete successful:', data);
+    return data;
+}
 
 
 // Загружаем JSON-файл с помощью fetch
@@ -511,12 +530,22 @@ const formsEditNode = async (nodeId = null) => {
     save.addEventListener('click', async () => {
         console.log('save', nodeData)
 
-        const convertImg = (canvas) => {
-            return new Promise(res => {
-                canvas.toBlob((blob) => { res(blob) }, 'image/jpeg', 1)
-            })
-        }
         if (canvasPreview) {
+            if (nodeData.preview.imgSrc) {
+                const name = nodeData.preview.imgSrc.split('/').pop()
+                try {
+                    const result = await deleteFileFromServer(name)
+                    console.log('delete result !!!!!!', result)
+                } catch (error) {
+                    console.log('error', error)
+                }
+            }
+            
+            const convertImg = (canvas) => {
+                return new Promise(res => {
+                    canvas.toBlob((blob) => { res(blob) }, 'image/jpeg', 1)
+                })
+            }
             const fileName = getFormattedDate() + '_pr.jpg'
             const blob = await convertImg(canvasPreview)
             const formData = new FormData()
@@ -524,8 +553,6 @@ const formsEditNode = async (nodeId = null) => {
             const resultPost = await postFileToServer(formData)
             console.log('^^^', resultPost)
             if (resultPost && resultPost.file && resultPost.file.filename && resultPost.file.filename === fileName) {
-                console.log('^^^!!!')
-                console.log('file uploaded', resultPost)
                 nodeData.preview.imgSrc = './images/' + fileName
             }
 
