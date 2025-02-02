@@ -1,3 +1,31 @@
+const url = window.location.origin
+const postDataToServer = async (data) => {
+    return new Promise((resolve, reject) => {
+        fetch(url + '/api/updateAppData', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ appData: data })
+        })
+            .then(response => {
+                if (!response.ok) {
+                    // Handle HTTP errors
+                    throw new Error(`HTTP error! Status: ${response.status}`)
+                }
+                return response
+            })
+            .then(data => {
+                console.log('Server response:', data)
+                resolve(data)
+            })
+            .catch(error => {
+                console.error('Error:', error)
+            })
+    })
+} 
+
+
 // Загружаем JSON-файл с помощью fetch
 const loadJson = () => {
     return new Promise(res => {
@@ -100,12 +128,15 @@ const drawPreviewNode = async (nodeId) => {
         console.log('node not found:' + nodeId)
         return;
     }
-    console.log('nodepreview', nodeId, node.preview)
     if (!node.isPublished) {
        return;     
     }
     const wrapper = document.querySelector('.content')
     const el = document.createElement('div')
+    const data = document.createElement('div')
+    data.classList.add('code')
+    data.innerHTML = JSON.stringify(node, null, 2) // node
+    el.appendChild(data)
     el.classList.add('view-list-item')
     wrapper.appendChild(el)
     const { imgSrc, text } = node.preview
@@ -190,17 +221,12 @@ const addNewNode = async (nodeId = null) => {
         "preview": { "imgSrc": null, "text": null },
         "tags": [],
         "raiting": 0,
-        "content": [
-            // { "type": "text", "html": "text text AAAAAAAAa" },
-            // { "type": "img", "src": "./files/0Ndha9CU5oc.jpg" },
-            // { "type": "text", "html": "text text AAAAAAAAa" }
-        ]
+        "content": []
     }
 
 
     document.querySelector('.add-new-node').style.display = 'none'
     const wrapper = document.querySelector('.edit-node')
-    console.log('click')
 
     const close = document.createElement('button')
     close.innerText = 'cancel'
@@ -213,17 +239,26 @@ const addNewNode = async (nodeId = null) => {
     const raiting = document.createElement('input')
     raiting.type = 'text'
     raiting.placeholder = 'raiting'
+    raiting.addEventListener('change', () => {
+        nodeData.raiting = raiting.value
+    })
     wrapper.appendChild(raiting)
 
     const title = document.createElement('input')
     title.type = 'text'
     title.placeholder = 'title'
+    title.addEventListener('change', () => {
+        nodeData.title = title.value
+    })
     wrapper.appendChild(title)
 
     const wrIsPublished = document.createElement('div')
     const checkbox = document.createElement('input')
     checkbox.type = 'checkbox'
     checkbox.checked = true
+    checkbox.addEventListener('change', () => {
+        nodeData.isPublished = checkbox.checked
+    })
     wrIsPublished.appendChild(checkbox);
     const label = document.createElement('label')
     label.textContent = 'isPublished'
@@ -233,13 +268,43 @@ const addNewNode = async (nodeId = null) => {
     const previewText = document.createElement('input')
     previewText.type = 'text'
     previewText.placeholder = 'previewText'
+    previewText.addEventListener('change', () => {
+        nodeData.preview.text = previewText.value
+    })
     wrapper.appendChild(previewText)
 
-    let arrTagsInput = []
+    // tags *****************************************************/
+    const tagsSet = new Set()
     const tagsWrapper = document.createElement('div')
     wrapper.appendChild(tagsWrapper)
 
+    let tagsWr = null
     const addTagList = () => {
+        if (tagsWr) {
+            tagsWrapper.removeChild(tagsWr)
+        }
+        tagsWr = document.createElement('div')
+        tagsWrapper.appendChild(tagsWr)
+
+        for (let value of tagsSet ) {
+            const t = document.createElement('div')
+            tagsWr.appendChild(t)
+            const v = document.createElement('span')
+            v.textContent = value
+            t.appendChild(v)
+            const remove = document.createElement('button')
+            remove.innerText = 'remove'
+            remove.addEventListener('click', () => {
+                tagsSet .delete(value)
+                t.removeChild(v)
+                t.removeChild(remove)
+                nodeData.tags = [...tagsSet ]
+            })
+            t.appendChild(remove)
+        }
+    }
+
+    const addTagDropdown = () => {
         const wr = document.createElement('div')
         tagsWrapper.appendChild(wr)
 
@@ -258,29 +323,47 @@ const addNewNode = async (nodeId = null) => {
         })
 
         const remove = document.createElement('button')
-        remove.innerText = 'remove'
+        remove.innerText = 'insert current tag'
         remove.addEventListener('click', () => {
+            tagsSet .add(select.value)
+            nodeData.tags = [...tagsSet]
             wr.removeChild(select)
             wr.removeChild(remove)
+            addTagList()
         })
         wr.appendChild(remove)
     }
 
     const createButtAddTag = document.createElement('button')
-    createButtAddTag.innerText = 'add tag'
-    createButtAddTag.addEventListener('click', () => addTagList())
+    createButtAddTag.innerText = 'add new tag'
+    createButtAddTag.addEventListener('click', () => addTagDropdown())
     wrapper.appendChild(createButtAddTag)
 
     const contentWrapper = document.createElement('div')
     wrapper.appendChild(contentWrapper)
 
+    // create text **********************************************/
     const createElementText = () => {
         const wr = document.createElement('div')
         contentWrapper.appendChild(wr)
 
+        const contentId = Math.floor(Math.random() * 1000) + '_contentId'
         const txt = document.createElement('input')
         txt.type = 'text'
         txt.placeholder = 'content text'
+        txt.addEventListener('change', () => {
+            let current = null
+            for (let i = 0; i < nodeData.content.length; i++) {
+                if (nodeData.content[i].contentId === contentId) {
+                    current = nodeData.content[i]
+                }
+            }
+            if (current) {
+                current.html = txt.value
+            } else {
+                nodeData.content.push({ contentId, type: 'text', html: txt.value })
+            }
+        })
         wr.appendChild(txt)
 
         const remove = document.createElement('button')
@@ -288,6 +371,7 @@ const addNewNode = async (nodeId = null) => {
         remove.addEventListener('click', () => {
             wr.removeChild(txt)
             wr.removeChild(remove)
+            nodeData.content = nodeData.content.filter(item => item.contentId !== contentId)
         })
         wr.appendChild(remove)
     }
@@ -299,26 +383,35 @@ const addNewNode = async (nodeId = null) => {
 
     const save = document.createElement('button')
     save.innerText = 'save'
-    save.addEventListener('click', () => {
-        console.log('save')
+    save.addEventListener('click', async () => {
+        console.log('save', nodeData)
+        appData.nodes.splice(0, 0, nodeData)
+        await postDataToServer(appData)
+        //redirectToAndDrawPage('node', nodeData.id)
+        document.querySelector('.edit-node').innerHTML = ''
+        updateFullApp()
     })
     wrapper.appendChild(save)
 }
 
-document.addEventListener('DOMContentLoaded', async () => {
+const updateFullApp = async () => {
+    // clear Prev
+    const wrapper = document.querySelector('.content')
+    wrapper.innerHTML = ''
+
     const data = await loadJson()
     appData = data
-
-    const wrapper = document.querySelector('.content')
     const nodesSort = appData.nodes.sort((a, b) => a.raiting - b.raiting)
-
     for (let i = 0; i < nodesSort.length; i++) {
         drawPreviewNode(nodesSort[i].id)
     }
+    const addNewNodeButton = document.querySelector('.add-new-node')
+    addNewNodeButton.style.display = 'block'  
+}  
 
+document.addEventListener('DOMContentLoaded', async () => { 
+    await updateFullApp()
     document.querySelector('.add-new-node').addEventListener('click', () => addNewNode(null)) 
-
-    //redirectToAndDrawPage()
 })
 
 window.addEventListener('popstate', (event) => {

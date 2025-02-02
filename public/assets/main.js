@@ -96,11 +96,11 @@ const drawText = (text, wrapper, size = 16) => {
 
 const drawPreviewNode = async (nodeId) => {    
     const node = appData.nodes.find(node => node.id === nodeId)
+    console.log('preview node', nodeId, node)
     if (!node) {
         console.log('node not found:' + nodeId)
         return;
     }
-    console.log('nodepreview', nodeId, node.preview)
     if (!node.isPublished) {
        return;     
     }
@@ -122,7 +122,7 @@ const drawPreviewNode = async (nodeId) => {
 
 const drawNode = async (nodeId) => {
     clearContent()
-    
+    console.log('draw node', nodeId, node)
     const node = appData.nodes.find(node => node.id === nodeId)
     if (!node) {
         console.log('node not found:' + nodeId)
@@ -135,8 +135,6 @@ const drawNode = async (nodeId) => {
         console.log('node content not found:' + nodeId)
         return;
     }
-
-    console.log('nodecontent', nodeId, node.content)
     const wrapper = document.querySelector('.content')
 
     for (let i = 0; i < node.content.length; i++) {
@@ -166,6 +164,7 @@ const drawList = async (listId) => {
 }
 
 const redirectToAndDrawPage = async (type, id) => {
+    console.log('*********************************')
     if (type && id) {
         window.history.pushState(
             { someData: 123 },
