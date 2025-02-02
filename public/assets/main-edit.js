@@ -1,3 +1,14 @@
+const getFormattedDate = () => {
+    const date = new Date()
+    const year = String(date.getFullYear()).slice(-2);
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const day = String(date.getDate()).padStart(2, '0')
+    const hours = String(date.getHours()).padStart(2, '0')
+    const minutes = String(date.getMinutes()).padStart(2, '0')
+    const seconds = String(date.getSeconds()).padStart(2, '0')
+    return `${year}${month}${day}_${hours}${minutes}${seconds}`
+  }
+
 const url = window.location.origin
 const postDataToServer = async (data) => {
     return new Promise((resolve, reject) => {
@@ -23,7 +34,32 @@ const postDataToServer = async (data) => {
                 console.error('Error:', error)
             })
     })
+}
+
+const postFileToServer = (data) => {
+    return new Promise((resolve, reject) => {
+        fetch(url + '/api/upload-image', {
+            method: 'POST',
+            body: data
+          })
+          .then(response => {
+            if (!response.ok) {
+              throw new Error('Network response was not ok: ' + response.status);
+            }
+            return response.json(); // or response.text(), depending on server response
+          })
+          .then(data => {
+            console.log('Upload successful:', data);
+            resolve(data)
+            //alert('Upload successful!');
+          })
+          .catch(error => {
+            console.error('Upload error:', error);
+            alert('Upload failed!');
+          });
+    })
 } 
+
 
 
 // Загружаем JSON-файл с помощью fetch
@@ -131,7 +167,11 @@ const drawPreviewNode = async (nodeId) => {
     wrapper.appendChild(el)
     const { imgSrc, text } = node.preview
     if (imgSrc) {
-        await drawImage(imgSrc, el)
+        try {
+            await drawImage(imgSrc, el) 
+        } catch (error) {
+            console.error(error)
+        }
     }
     if (text) {
         drawText(text, el)
@@ -258,7 +298,6 @@ const formsEditNode = async (nodeId = null) => {
         nodeData = appData.nodes.find(node => node.id === nodeId)
     } 
 
-
     document.querySelector('.add-new-node').style.display = 'none'
     const wrapper = document.querySelector('.edit-node')
 
@@ -308,6 +347,47 @@ const formsEditNode = async (nodeId = null) => {
         nodeData.preview.text = previewText.value
     })
     wrapper.appendChild(previewText)
+
+    // preview image *************************************************/
+    const S = 250
+    const showImage = document.createElement('img')
+    showImage.style.width = S + 'px'
+    showImage.style.height = S + 'px'
+    wrapper.appendChild(showImage)
+    const previewImage = document.createElement('input')
+    previewImage.type = 'file'
+    previewImage.accept = 'image/*'
+    let canvasPreview = null
+    previewImage.addEventListener('change', () => {
+        const file = previewImage.files[0]
+        const reader = new FileReader()
+        reader.addEventListener('load', e => {
+            // showImage.src = reader.result
+            const originalDataUrl = e.target.result
+            const img = new Image()
+            img.onload = () => {
+              const maxWidth = S
+              const scaleFactor = maxWidth / img.width
+    
+              canvasPreview = document.createElement('canvas');
+              canvasPreview.width = maxWidth
+              canvasPreview.height = img.height * scaleFactor
+              const ctx = canvasPreview.getContext('2d');
+              ctx.drawImage(img, 0, 0, canvasPreview.width, canvasPreview.height);
+              const resizedDataUrl = canvasPreview.toDataURL('image/jpeg', 1);
+              showImage.src = resizedDataUrl;
+              
+              // (Optional) If you want to upload the resized image,
+              // you can send `resizedDataUrl` to your server or convert it to a Blob:
+              // const byteString = atob(resizedDataUrl.split(',')[1]);
+              // ...
+            };
+            img.src = originalDataUrl
+        })
+        reader.readAsDataURL(file)
+    })
+    wrapper.appendChild(previewImage)
+
 
     // tags *****************************************************/
     let tagsSet = new Set()
@@ -430,6 +510,27 @@ const formsEditNode = async (nodeId = null) => {
     save.innerText = 'save'
     save.addEventListener('click', async () => {
         console.log('save', nodeData)
+
+        const convertImg = (canvas) => {
+            return new Promise(res => {
+                canvas.toBlob((blob) => { res(blob) }, 'image/jpeg', 1)
+            })
+        }
+        if (canvasPreview) {
+            const fileName = getFormattedDate() + '_pr.jpg'
+            const blob = await convertImg(canvasPreview)
+            const formData = new FormData()
+            formData.append('file', blob, fileName)
+            const resultPost = await postFileToServer(formData)
+            console.log('^^^', resultPost)
+            if (resultPost && resultPost.file && resultPost.file.filename && resultPost.file.filename === fileName) {
+                console.log('^^^!!!')
+                console.log('file uploaded', resultPost)
+                nodeData.preview.imgSrc = './images/' + fileName
+            }
+
+        }
+
         if (!nodeId) {
             appData.nodes.splice(0, 0, nodeData)
         } else {

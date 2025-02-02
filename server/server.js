@@ -1,15 +1,15 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const path = require('path');
-const fs = require("fs/promises");
+const express = require('express')
+const bodyParser = require('body-parser')
+const path = require('path')
+const fs = require("fs/promises")
+const multer = require('multer')
 
-const app = express();
-const PORT = 3000;
+const app = express()
+const PORT = 3000
 
 async function saveDataAsync(newData) {
   try {
     let currentData = [];
-
     // // 1. Check if file exists
     // try {
     //   // 2. Read the file and parse existing JSON
@@ -32,10 +32,17 @@ async function saveDataAsync(newData) {
   }
 }
 
-// Example usage
-// (async () => {
-//   await saveDataAsync({ id: 2, name: "Bob" });
-// })();
+
+const uploadDir = path.join(__dirname, '../public/images')
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, uploadDir)
+  },
+  filename: (req, file, cb) => {
+    cb(null, file.originalname)
+  },
+})
+const upload = multer({ storage })
 
 
 // Подключаем статические файлы из папки public
@@ -54,6 +61,21 @@ app.get('/edit', (req, res) => {
 app.post('/api/updateAppData', async (req, res) => {
     await saveDataAsync(req.body.appData)
     res.sendStatus(200)
+})
+
+app.post('/api/updateAppData', async (req, res) => {
+  await saveDataAsync(req.body.appData)
+  res.sendStatus(200)
+})
+
+app.post('/api/upload-image', upload.single('file'), (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ error: 'No file uploaded' });
+  }
+  res.json({
+    message: 'Файл успешно загружен',
+    file: req.file,
+  })
 })
 
 // Запуск
