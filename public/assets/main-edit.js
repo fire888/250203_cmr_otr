@@ -310,7 +310,10 @@ const formsEditNode = async (nodeId = null) => {
     wrapper.appendChild(previewText)
 
     // tags *****************************************************/
-    const tagsSet = new Set()
+    let tagsSet = new Set()
+    if (nodeData.tags) {
+        tagsSet = new Set(nodeData.tags)
+    }
     const tagsWrapper = document.createElement('div')
     wrapper.appendChild(tagsWrapper)
 
@@ -339,7 +342,8 @@ const formsEditNode = async (nodeId = null) => {
             t.appendChild(remove)
         }
     }
-
+    addTagList()
+    
     const addTagDropdown = () => {
         const wr = document.createElement('div')
         tagsWrapper.appendChild(wr)
@@ -379,14 +383,15 @@ const formsEditNode = async (nodeId = null) => {
     wrapper.appendChild(contentWrapper)
 
     // create text **********************************************/
-    const createElementText = () => {
+    const createElementText = (data) => {
         const wr = document.createElement('div')
         contentWrapper.appendChild(wr)
 
-        const contentId = Math.floor(Math.random() * 1000) + '_contentId'
+        const contentId = data ? data.contentId : Math.floor(Math.random() * 1000) + '_contentId'
         const txt = document.createElement('input')
         txt.type = 'text'
         txt.placeholder = 'content text'
+        txt.value = data ? data.html : ''
         txt.addEventListener('change', () => {
             let current = null
             for (let i = 0; i < nodeData.content.length; i++) {
@@ -410,6 +415,10 @@ const formsEditNode = async (nodeId = null) => {
             nodeData.content = nodeData.content.filter(item => item.contentId !== contentId)
         })
         wr.appendChild(remove)
+    }
+    const texts = nodeData.content.filter(item => item.type === 'text')
+    for (let i = 0; i < texts.length; i++) {
+        createElementText(texts[i])
     }
 
     const createButtAddText = document.createElement('button')

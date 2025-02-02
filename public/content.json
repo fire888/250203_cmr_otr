@@ -8,9 +8,20 @@
         "imgSrc": null,
         "text": "17:03 aaa"
       },
-      "tags": [],
+      "tags": [
+        "code",
+        "art",
+        "design",
+        "zbrush"
+      ],
       "raiting": "103",
-      "content": []
+      "content": [
+        {
+          "contentId": "758_contentId",
+          "type": "text",
+          "html": "17:38 content text"
+        }
+      ]
     },
     {
       "title": "AAA",

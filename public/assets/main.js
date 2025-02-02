@@ -122,8 +122,8 @@ const drawPreviewNode = async (nodeId) => {
 
 const drawNode = async (nodeId) => {
     clearContent()
-    console.log('draw node', nodeId, node)
     const node = appData.nodes.find(node => node.id === nodeId)
+    console.log('draw node', nodeId, node)
     if (!node) {
         console.log('node not found:' + nodeId)
         return;
