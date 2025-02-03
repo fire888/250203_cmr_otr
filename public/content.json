@@ -5,18 +5,58 @@
       "title": "Камень Ножницы Бумага",
       "isPublished": true,
       "preview": {
-        "imgSrc": "./images/250202_212836_pr.jpg",
+        "imgSrc": "./images/250202_230857_pr.jpg",
         "text": ""
       },
       "tags": [
         "code"
       ],
-      "raiting": "110",
+      "raiting": "116",
       "content": [
         {
           "contentId": "340_contentId",
           "type": "text",
           "html": "Игра"
+        },
+        {
+          "contentId": "245_contentId",
+          "type": "text",
+          "html": "bbbbb"
+        },
+        {
+          "contentId": "533_contentId",
+          "type": "text",
+          "html": "3333"
+        },
+        {
+          "contentId": "444_contentId",
+          "type": "text",
+          "html": "yyyyy"
+        },
+        {
+          "contentId": "661_contentId",
+          "type": "img",
+          "src": "./images/250202_235124_c.jpg"
+        },
+        {
+          "contentId": "948_contentId",
+          "type": "img",
+          "src": "./images/250202_235151_c.jpg"
+        },
+        {
+          "contentId": "491_contentId",
+          "type": "img",
+          "src": "./images/250202_235749_c.jpg"
+        },
+        {
+          "contentId": "566_contentId",
+          "type": "img",
+          "src": "./images/250203_000354_c.jpg"
+        },
+        {
+          "contentId": "763_contentId",
+          "type": "img",
+          "src": "./images/250203_000425_c.jpg"
         }
       ]
     },

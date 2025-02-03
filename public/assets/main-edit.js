@@ -49,7 +49,7 @@ const postFileToServer = (data) => {
             return response.json(); // or response.text(), depending on server response
           })
           .then(data => {
-            console.log('Upload successful:', data);
+            //console.log('Upload successful:', data);
             resolve(data)
             //alert('Upload successful!');
           })
@@ -301,7 +301,6 @@ const redirectToAndDrawPage = async (type = null, id = null) => {
 
 /** edit *********************************************************** */
 const formsEditNode = async (nodeId = null) => {
-    console.log('&&&& edit', nodeId)
     let nodeData = null
     if (!nodeId) {
         nodeData = {
@@ -323,7 +322,9 @@ const formsEditNode = async (nodeId = null) => {
     const close = document.createElement('button')
     close.innerText = 'cancel'
     close.addEventListener('click', () => {
-        redirectToAndDrawPage()
+        nodeId 
+            ? redirectToAndDrawPage('node', nodeId) 
+            : redirectToAndDrawPage()
     })
     wrapper.appendChild(close)
 
@@ -372,16 +373,18 @@ const formsEditNode = async (nodeId = null) => {
     const showImage = document.createElement('img')
     showImage.style.width = S + 'px'
     showImage.style.height = S + 'px'
+    if (nodeData.preview.imgSrc) {
+        showImage.src = nodeData.preview.imgSrc
+    }
     wrapper.appendChild(showImage)
-    const previewImage = document.createElement('input')
-    previewImage.type = 'file'
-    previewImage.accept = 'image/*'
+    const prImgInput = document.createElement('input')
+    prImgInput.type = 'file'
+    prImgInput.accept = 'image/*'
     let canvasPreview = null
-    previewImage.addEventListener('change', () => {
-        const file = previewImage.files[0]
+    prImgInput.addEventListener('change', () => {
+        const file = prImgInput.files[0]
         const reader = new FileReader()
         reader.addEventListener('load', e => {
-            // showImage.src = reader.result
             const originalDataUrl = e.target.result
             const img = new Image()
             img.onload = () => {
@@ -395,17 +398,12 @@ const formsEditNode = async (nodeId = null) => {
               ctx.drawImage(img, 0, 0, canvasPreview.width, canvasPreview.height);
               const resizedDataUrl = canvasPreview.toDataURL('image/jpeg', 1);
               showImage.src = resizedDataUrl;
-              
-              // (Optional) If you want to upload the resized image,
-              // you can send `resizedDataUrl` to your server or convert it to a Blob:
-              // const byteString = atob(resizedDataUrl.split(',')[1]);
-              // ...
-            };
+            }
             img.src = originalDataUrl
         })
         reader.readAsDataURL(file)
     })
-    wrapper.appendChild(previewImage)
+    wrapper.appendChild(prImgInput)
 
 
     // tags *****************************************************/
@@ -515,9 +513,64 @@ const formsEditNode = async (nodeId = null) => {
         })
         wr.appendChild(remove)
     }
-    const texts = nodeData.content.filter(item => item.type === 'text')
-    for (let i = 0; i < texts.length; i++) {
-        createElementText(texts[i])
+
+    /** create content image **************************************/
+    const createElementImage = (data) => {
+        const wr = document.createElement('div');
+        contentWrapper.appendChild(wr);
+
+        const contentId = data ? data.contentId : Math.floor(Math.random() * 1000) + '_contentId';
+      
+        // Create an <img> for previewing
+        const S = 250;
+        const showImage = document.createElement('img');
+        showImage.style.width = S + 'px';
+        showImage.style.height = S + 'px';
+        if (data && data.src) {
+            showImage.src = data.src
+        }
+        wr.appendChild(showImage);
+      
+        // Create the file input (only accept images)
+        const prImgInput = document.createElement('input');
+        prImgInput.type = 'file';
+        prImgInput.accept = 'image/*';
+      
+        prImgInput.addEventListener('change', () => {
+          // Get the first selected file
+          const file = prImgInput.files[0];
+          if (!file) return; // no file, user canceled
+      
+          // 1. PREVIEW the image using FileReader:
+          const reader = new FileReader();
+          reader.addEventListener('load', (e) => {
+            // e.target.result is the base64 data URL
+            showImage.src = e.target.result
+          });
+          // Convert file to a data URL
+          reader.readAsDataURL(file);
+      
+          // 2. PREPARE for sending:
+          const fileName = getFormattedDate() + '_c.jpg';
+          const formData = new FormData();
+          formData.append('file', file, fileName);
+      
+          // For your tracking or further processing
+          //newImages = newImages.filter(item => item.contentId !== contentId)
+          //newImages.push({ contentId, fileName, formData });
+          
+        })
+      
+        wr.appendChild(prImgInput);        
+    };
+
+    for (let i = 0; i < nodeData.content.length; i++) {
+        if (nodeData.content[i].type === 'text') {
+            createElementText(nodeData.content[i])
+        }
+        if (nodeData.content[i].type === 'img') {
+            createElementImage(nodeData.content[i])
+        }
     }
 
     const createButtAddText = document.createElement('button')
@@ -525,17 +578,20 @@ const formsEditNode = async (nodeId = null) => {
     createButtAddText.addEventListener('click', () => createElementText())
     wrapper.appendChild(createButtAddText)
 
+    const createContentImage = document.createElement('button')
+    createContentImage.innerText = 'add content image'
+    createContentImage.addEventListener('click', () => createElementImage())
+    wrapper.appendChild(createContentImage)
+
+    // save *******************************************************/
     const save = document.createElement('button')
     save.innerText = 'save'
     save.addEventListener('click', async () => {
-        console.log('save', nodeData)
-
         if (canvasPreview) {
             if (nodeData.preview.imgSrc) {
                 const name = nodeData.preview.imgSrc.split('/').pop()
                 try {
                     const result = await deleteFileFromServer(name)
-                    console.log('delete result !!!!!!', result)
                 } catch (error) {
                     console.log('error', error)
                 }
@@ -551,13 +607,29 @@ const formsEditNode = async (nodeId = null) => {
             const formData = new FormData()
             formData.append('file', blob, fileName)
             const resultPost = await postFileToServer(formData)
-            console.log('^^^', resultPost)
             if (resultPost && resultPost.file && resultPost.file.filename && resultPost.file.filename === fileName) {
                 nodeData.preview.imgSrc = './images/' + fileName
             }
-
         }
-
+        console.log('JJJJ', newImages)
+        for (let i = 0; i < newImages.length; i++) {
+            const { contentId, formData, fileName } = newImages[i]
+            for (let j = 0; j < nodeData.content.length; j++) {
+                if (nodeData.content[j].contentId !== contentId) {
+                    continue;
+                }
+                const fname = nodeData.content[j].src.split('/').pop()
+                console.log('HHH before del', fname)
+                const result = await deleteFileFromServer(fname)
+                console.log('delete content img', result)
+                nodeData.content[j].src = './images/' + fileName
+            }
+            console.log('newImage', newImages[i])
+            const resultPost = await postFileToServer(formData)
+            if (resultPost && resultPost.file && resultPost.file.filename) {
+                nodeData.content[contentId].src = './images/' + resultPost.file.filename // console.log('TTT send')
+            }
+        }
         if (!nodeId) {
             appData.nodes.splice(0, 0, nodeData)
         } else {
@@ -569,14 +641,12 @@ const formsEditNode = async (nodeId = null) => {
             }
             appData.nodes[index] = nodeData
         }
-
         await postDataToServer(appData)
         document.querySelector('.edit-node').innerHTML = ''
-        redirectToAndDrawPage()
+        redirectToAndDrawPage('node', nodeData.id)
     })
     wrapper.appendChild(save)
 }
-
 
 document.addEventListener('DOMContentLoaded', async () => { 
     await redirectToAndDrawPage()
