@@ -9,20 +9,21 @@
         "text": "sdsdsd"
       },
       "tags": [
-        "zbrush"
+        "zbrush",
+        "code"
       ],
       "raiting": "0sdsdsd",
       "content": [
-        {
-          "contentId": "328_contentId",
-          "type": "text",
-          "html": "sdsds"
-        },
         {
           "contentId": "747_contentId",
           "type": "img",
           "src": "./images/250204_165840_c.jpg",
           "fileName": "250204_165840_c.jpg"
+        },
+        {
+          "contentId": "328_contentId",
+          "type": "text",
+          "html": "sdsds"
         }
       ]
     },

@@ -43,7 +43,20 @@
     window.scrollTo(0, 0)
   }
 
+  /*********** Рисование элементов  ******************************************/
+
   const drawImage = async (src, wrapper) => {
+    return new Promise((resolve) => {
+      const img = document.createElement('img')
+      img.onload = () => {
+        wrapper.appendChild(img)
+        resolve()
+      }
+      img.src = src
+    })
+  }
+
+  const drawImageSizeScreen = async (src, wrapper) => {
     return new Promise((resolve) => {
       const img = document.createElement('img')
       if (minKey === 'w') {
@@ -65,23 +78,18 @@
     const p = document.createElement('p')
     p.innerHTML = text
     p.style.fontSize = `${size}px`
-    p.style.height = 'auto'
-    p.style.alignContent = 'left'
-    p.style.padding = '0 20px'
-
-    // Выравниваем ширину под основную сторону
-    if (minKey === 'w') {
-      p.style.width = (w - OFFSET_W) + 'px'
-    } else {
-      p.style.width = (h - OFFSET_W) + 'px'
-    }
-
     wrapper.appendChild(p)
   }
 
-  /*********** Рисование элементов *******************************************/
+  const drawEmptyLine = (wrapper, h = 30) => {
+    const elem = document.createElement('div')
+    elem.style.minHeight = h + 'px'
+    wrapper.appendChild(elem)
+}
 
-  const drawPreviewNode = async (nodeId) => {
+  /*********** Рисование контейнеров *****************************************/
+
+  const drawPreviewNode = async (nodeId, parent) => {
     const node = appData.nodes.find((n) => n.id === nodeId)
     if (!node || !node.isPublished) return;
 
@@ -89,8 +97,8 @@
     el.classList.add('view-list-item')
     el.addEventListener('click', () => {
         redirectToAndDrawPage('node', nodeId)
-      });
-    contentWrapper.appendChild(el)
+    })
+    parent.appendChild(el)
 
     const { imgSrc, text } = node.preview
     if (imgSrc) {
@@ -110,7 +118,7 @@
 
     for (const block of node.content) {
       if (block.type === 'img') {
-        await drawImage(block.src, contentWrapper)
+        await drawImageSizeScreen(block.src, contentWrapper)
       } else if (block.type === 'text') {
         drawText(block.html, contentWrapper, block.size);
       }
@@ -121,12 +129,32 @@
     const nodes = appData.nodes
         .filter((n) => n.tags?.includes(listId))
         .sort((a, b) => b.raiting - a.raiting)
-    for (const node of nodes) {
-      await drawPreviewNode(node.id)
-    }
+
+    if (listId === 'code' || listId === 'design') {
+        const viewList = document.createElement('div')
+        viewList.classList.add('view-list')
+        contentWrapper.appendChild(viewList)
+        for (const node of nodes) {
+          await drawPreviewNode(node.id, viewList)
+        }
+    } else {
+      for (const node of nodes) {
+        let isImg = false
+        let isText = false
+        if (node.content[0] && node.content[0].type === 'img') {
+          await drawImageSizeScreen(node.content[0].src, contentWrapper)
+          isImg = true
+        }
+        if (node.content[1] && node.content[1].type === 'text') {
+          drawText(node.content[1].html, contentWrapper)
+          isText = true
+        }
+        if (isImg || isText) drawEmptyLine(contentWrapper, 60)
+      }
+    }   
   }
 
-  const reDrawMainMenu = (listId) => {
+  const redrawMainMenu = (listId) => {
     const links = document.querySelectorAll('.nav-item')
     links.forEach((link) => {
         link.id === listId 
@@ -140,13 +168,13 @@
     if (type && id) {
       window.history.pushState({ type, id }, '', `?${type}=${id}`)
     }
-    if (!type) reDrawMainMenu('code')
+    if (!type) redrawMainMenu('code')
     // Парсим текущий URL и рисуем нужный контент
     const { nodeId, listId } = parseUrlParams()
     if (nodeId) {
         await drawNode(nodeId)
     } else if (listId) {
-        reDrawMainMenu(listId)
+        redrawMainMenu(listId)
         await drawList(listId)
     }
   }
