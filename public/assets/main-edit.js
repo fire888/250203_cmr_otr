@@ -307,7 +307,7 @@ const formsEditNode = async (nodeId = null) => {
     const wrapper = document.querySelector('.edit-node')
 
     const close = document.createElement('button')
-    close.innerText = 'cancel'
+    close.innerText = '↗️'
     close.addEventListener('click', () => {
         nodeId 
             ? redirectToAndDrawPage('node', nodeId) 
@@ -395,7 +395,7 @@ const formsEditNode = async (nodeId = null) => {
     })
     wrapper.appendChild(prImgInput)
     const remove = document.createElement('button')
-    remove.innerText = 'delete'
+    remove.innerText = '✖️'
     remove.addEventListener('click', () => {
         showImage.removeAttribute("src");
         if (nodeData.preview.imageCandidate) {
@@ -431,7 +431,7 @@ const formsEditNode = async (nodeId = null) => {
             v.textContent = value
             t.appendChild(v)
             const remove = document.createElement('button')
-            remove.innerText = 'remove'
+            remove.innerText = '✖️'
             remove.addEventListener('click', () => {
                 tagsSet.delete(value)
                 t.removeChild(v)
@@ -457,20 +457,20 @@ const formsEditNode = async (nodeId = null) => {
         }
         wr.appendChild(select)
     
-        const remove = document.createElement('button')
-        remove.innerText = 'insert current tag'
-        remove.addEventListener('click', () => {
-            tagsSet .add(select.value)
+        const appendTag = document.createElement('button')
+        appendTag.innerText = '✔️'
+        appendTag.addEventListener('click', () => {
+            tagsSet.add(select.value)
             nodeData.tags = [...tagsSet]
             wr.removeChild(select)
-            wr.removeChild(remove)
+            wr.removeChild(appendTag)
             addTagList()
         })
-        wr.appendChild(remove)
+        wr.appendChild(appendTag)
     }
 
     const createButtAddTag = document.createElement('button')
-    createButtAddTag.innerText = 'add new tag'
+    createButtAddTag.innerText = '➕'
     createButtAddTag.addEventListener('click', () => addTagDropdown())
     wrapper.appendChild(createButtAddTag)
     drawEmptyLine(wrapper)
@@ -576,7 +576,7 @@ const formsEditNode = async (nodeId = null) => {
         wr.appendChild(txt)
 
         const remove = document.createElement('button')
-        remove.innerText = 'remove'
+        remove.innerText = '✖️'
         remove.addEventListener('click', () => {
             orderContent.destroyElem(contentId)
 
@@ -584,13 +584,13 @@ const formsEditNode = async (nodeId = null) => {
         })
         wr.appendChild(remove)
         const moveTop = document.createElement('button')
-        moveTop.innerText = 'moveTop'
+        moveTop.innerText = '🔼'
         moveTop.addEventListener('click', () => {
             orderContent.moveTop(contentId)
         })
         wr.appendChild(moveTop)
         const moveBottom = document.createElement('button')
-        moveBottom.innerText = 'moveBottom'
+        moveBottom.innerText = '🔽'
         moveBottom.addEventListener('click', () => {
             orderContent.moveBottom(contentId)
         })
@@ -648,7 +648,7 @@ const formsEditNode = async (nodeId = null) => {
         })
         wr.appendChild(imgInput)
         const remove = document.createElement('button')
-        remove.innerText = 'remove'
+        remove.innerText = '✖️'
         remove.addEventListener('click', () => {
             if (existContentElem) {
                 existContentElem.newDataCandidate = { contentId, message: 'mustDelete', type: 'img' }
@@ -660,13 +660,13 @@ const formsEditNode = async (nodeId = null) => {
         })
         wr.appendChild(remove)
         const moveTop = document.createElement('button')
-        moveTop.innerText = 'moveTop'
+        moveTop.innerText = '🔼'
         moveTop.addEventListener('click', () => {
             orderContent.moveTop(contentId)
         })
         wr.appendChild(moveTop)
         const moveBottom = document.createElement('button')
-        moveBottom.innerText = 'moveBottom'
+        moveBottom.innerText = '🔽'
         moveBottom.addEventListener('click', () => {
             orderContent.moveBottom(contentId)
         })
@@ -685,12 +685,12 @@ const formsEditNode = async (nodeId = null) => {
     drawEmptyLine(wrapper)
 
     const createButtAddText = document.createElement('button')
-    createButtAddText.innerText = 'add content text'
+    createButtAddText.innerText = 'add ✍️'
     createButtAddText.addEventListener('click', () => createElementText())
     wrapper.appendChild(createButtAddText)
 
     const createContentImage = document.createElement('button')
-    createContentImage.innerText = 'add content image'
+    createContentImage.innerText = 'add 🖼'
     createContentImage.addEventListener('click', () => createElementImage())
     wrapper.appendChild(createContentImage)
 
@@ -698,7 +698,7 @@ const formsEditNode = async (nodeId = null) => {
 
     // save *******************************************************/
     const save = document.createElement('button')
-    save.innerText = 'save'
+    save.innerText = '✏️'
     save.addEventListener('click', async () => {
         if (nodeData.preview.imageCandidate) {
             if (nodeData.preview.imageCandidate.message === "mustDelete") {
@@ -743,13 +743,11 @@ const formsEditNode = async (nodeId = null) => {
                 }
             }
         }
-
         for (let i = 0; i < nodeData.content.length; i++) {
             const contentItem = nodeData.content[i]
             if (!contentItem.newDataCandidate) {
                 continue; 
             }
-
             if (contentItem.newDataCandidate.type === 'text') {
                 nodeData.content[i] = contentItem.newDataCandidate
             }
@@ -763,7 +761,6 @@ const formsEditNode = async (nodeId = null) => {
                         console.log('error', error)
                     }
                 }
-
                 const { contentId, formData, fileName, message } = contentItem.newDataCandidate
                 if (message === 'mustDelete') {
                     nodeData.content.splice(i, 1)
