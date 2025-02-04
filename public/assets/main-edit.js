@@ -496,10 +496,18 @@ const formsEditNode = async (nodeId = null) => {
                     current = nodeData.content[i]
                 }
             }
+            const newDataCandidate = { contentId, type: 'text', html: txt.value }
             if (current) {
-                current.html = txt.value
+                current.newDataCandidate = newDataCandidate
             } else {
-                nodeData.content.push({ contentId, type: 'text', html: txt.value })
+                nodeData.content.push({ 
+                    contentId, 
+                    newDataCandidate: { 
+                        contentId, 
+                        type: 'text', 
+                        html: txt.value 
+                    } 
+                })
             }
         })
         wr.appendChild(txt)
@@ -507,62 +515,101 @@ const formsEditNode = async (nodeId = null) => {
         const remove = document.createElement('button')
         remove.innerText = 'remove'
         remove.addEventListener('click', () => {
-            wr.removeChild(txt)
-            wr.removeChild(remove)
+            wr.innerHTML = ''
+            contentWrapper.removeChild(wr)
             nodeData.content = nodeData.content.filter(item => item.contentId !== contentId)
         })
         wr.appendChild(remove)
+        const moveTop = document.createElement('button')
+        moveTop.innerText = 'moveTop'
+        moveTop.addEventListener('click', () => {
+            console.log('HHH, top')
+        })
+        wr.appendChild(moveTop)
+        const moveBottom = document.createElement('button')
+        moveBottom.innerText = 'moveBottom'
+        moveBottom.addEventListener('click', () => {
+            console.log('HH, bottom')
+        })
+        wr.appendChild(moveBottom)
     }
 
     /** create content image **************************************/
-    const createElementImage = (data) => {
+    const createElementImage = (existContentElem = null) => {
         const wr = document.createElement('div');
         contentWrapper.appendChild(wr);
 
-        const contentId = data ? data.contentId : Math.floor(Math.random() * 1000) + '_contentId';
-      
-        // Create an <img> for previewing
+        const contentId = existContentElem ? existContentElem.contentId : Math.floor(Math.random() * 1000) + '_contentId';
+    
         const S = 250;
         const showImage = document.createElement('img');
         showImage.style.width = S + 'px';
         showImage.style.height = S + 'px';
-        if (data && data.src) {
-            showImage.src = data.src
+        if (existContentElem && existContentElem.src) {
+            showImage.src = existContentElem.src
         }
         wr.appendChild(showImage);
       
         // Create the file input (only accept images)
-        const prImgInput = document.createElement('input');
-        prImgInput.type = 'file';
-        prImgInput.accept = 'image/*';
+        const imgInput = document.createElement('input');
+        imgInput.type = 'file';
+        imgInput.accept = 'image/*';
+        imgInput.addEventListener('change', () => {
+            const file = imgInput.files[0]
+            if (!file) return;
+            const reader = new FileReader()
+            reader.addEventListener('load', (e) => {
+                showImage.src = e.target.result
+            })
+            reader.readAsDataURL(file)
       
-        prImgInput.addEventListener('change', () => {
-          // Get the first selected file
-          const file = prImgInput.files[0];
-          if (!file) return; // no file, user canceled
-      
-          // 1. PREVIEW the image using FileReader:
-          const reader = new FileReader();
-          reader.addEventListener('load', (e) => {
-            // e.target.result is the base64 data URL
-            showImage.src = e.target.result
-          });
-          // Convert file to a data URL
-          reader.readAsDataURL(file);
-      
-          // 2. PREPARE for sending:
-          const fileName = getFormattedDate() + '_c.jpg';
-          const formData = new FormData();
-          formData.append('file', file, fileName);
-      
-          // For your tracking or further processing
-          //newImages = newImages.filter(item => item.contentId !== contentId)
-          //newImages.push({ contentId, fileName, formData });
-          
+            const fileName = getFormattedDate() + '_c.jpg'
+            const formData = new FormData()
+            formData.append('file', file, fileName)
+
+            const newDataCandidate = {
+                contentId, 
+                type: 'img', 
+                src: './images/' + fileName, 
+                fileName, 
+                formData, 
+            }
+
+            if (existContentElem) {
+                existContentElem.newDataCandidate = newDataCandidate
+            } else {
+                nodeData.content.push({ 
+                    contentId, 
+                    newDataCandidate, 
+                }) 
+            }    
         })
-      
-        wr.appendChild(prImgInput);        
-    };
+        wr.appendChild(imgInput)
+        const remove = document.createElement('button')
+        remove.innerText = 'remove'
+        remove.addEventListener('click', () => {
+            if (existContentElem) {
+                existContentElem.newDataCandidate = { contentId, message: 'mustDelete', type: 'img' }
+            } else {
+                nodeData.content = nodeData.content.filter(item => item.contentId !== contentId)
+            } 
+            wr.innerHTML = ''
+            contentWrapper.removeChild(wr)
+        })
+        wr.appendChild(remove)
+        const moveTop = document.createElement('button')
+        moveTop.innerText = 'moveTop'
+        moveTop.addEventListener('click', () => {
+            console.log('HHH, top')
+        })
+        wr.appendChild(moveTop)
+        const moveBottom = document.createElement('button')
+        moveBottom.innerText = 'moveBottom'
+        moveBottom.addEventListener('click', () => {
+            console.log('HH, bottom')
+        })
+        wr.appendChild(moveBottom)
+    }
 
     for (let i = 0; i < nodeData.content.length; i++) {
         if (nodeData.content[i].type === 'text') {
@@ -611,23 +658,37 @@ const formsEditNode = async (nodeId = null) => {
                 nodeData.preview.imgSrc = './images/' + fileName
             }
         }
-        console.log('JJJJ', newImages)
-        for (let i = 0; i < newImages.length; i++) {
-            const { contentId, formData, fileName } = newImages[i]
-            for (let j = 0; j < nodeData.content.length; j++) {
-                if (nodeData.content[j].contentId !== contentId) {
-                    continue;
-                }
-                const fname = nodeData.content[j].src.split('/').pop()
-                console.log('HHH before del', fname)
-                const result = await deleteFileFromServer(fname)
-                console.log('delete content img', result)
-                nodeData.content[j].src = './images/' + fileName
+
+        for (let i = 0; i < nodeData.content.length; i++) {
+            const contentItem = nodeData.content[i]
+            if (!contentItem.newDataCandidate) {
+                continue; 
             }
-            console.log('newImage', newImages[i])
-            const resultPost = await postFileToServer(formData)
-            if (resultPost && resultPost.file && resultPost.file.filename) {
-                nodeData.content[contentId].src = './images/' + resultPost.file.filename // console.log('TTT send')
+
+            if (contentItem.newDataCandidate.type === 'text') {
+                nodeData.content[i] = contentItem.newDataCandidate
+            }
+
+            if (contentItem.newDataCandidate.type === 'img') { 
+                if (contentItem.src) {
+                    const name = contentItem.src.split('/').pop()
+                    try {
+                        const result = await deleteFileFromServer(name)
+                    } catch (error) {
+                        console.log('error', error)
+                    }
+                }
+
+                const { contentId, formData, fileName, message } = contentItem.newDataCandidate
+                if (message === 'mustDelete') {
+                    console.log('YYY')
+                    nodeData.content.splice(i, 1)
+                    --i
+                } else {
+                    const resultPost = await postFileToServer(formData)
+                    nodeData.content[i] = contentItem.newDataCandidate
+                    delete nodeData.content[i].formData
+                }
             }
         }
         if (!nodeId) {
