@@ -1,203 +1,172 @@
-// Загружаем JSON-файл с помощью fetch
-const loadJson = () => {
-    return new Promise(res => {
-        fetch('./content.json')
-        .then(response => {
-          if (!response.ok) {
-            throw new Error('Network response was not OK: ' + response.status);
-          }
-          return response.json();
-        })
-        .then(data => {
-          res(data)
-        })
-        .catch(error => {
-          console.error('Fetch error:', error);
-        });
-    })
-}
-// check parameters from url
-const checkParamsUrl = () => {
-    const queryString = window.location.search
-    const urlParams = new URLSearchParams(queryString)
-    const data = {
-        nodeId: null,
-        mode: null,
-        listId: null, 
-    }
-    for (const [key, value] of urlParams.entries()) {
-        console.log(key, value);
-        if (key === 'node') {
-            data.nodeId = value
-        }
-        if (key === 'mode') {
-            data.mode = value
-        }
-        if (key === 'list') {
-            data.listId = value
-        }
-    }
-    return data
-}
+(() => {
+  /*********** Глобальные переменные и состояния *****************************/
+  
+  const OFFSET_W = 50
+  let w, h, minKey
+  let appData = null
+  const contentWrapper = document.querySelector('.content')
 
-/** GLOBAL DATA **********************************/
-// window
-let w = window.innerWidth
-let h = window.innerHeight
-let minKey = w < h ? 'w' : 'h'
-document.addEventListener('resize', () => {
-    w = window.innerWidth
-    h = window.innerHeight
+  const updateDimensions = () => {
+    w = window.innerWidth;
+    h = window.innerHeight;
     minKey = w < h ? 'w' : 'h'
-})
-const OW = 50 // offsetW
-// app data
-let appData = null
+  };
 
-const clearContent = () => {
-    const wrapper = document.querySelector('.content')
-    wrapper.innerHTML = ''
+  updateDimensions()
+  window.addEventListener('resize', updateDimensions)
+
+  /*********** Утилиты *******************************************************/
+
+  const loadJson = async (url) => {
+    try {
+      const response = await fetch(url)
+      if (!response.ok) {
+        throw new Error(`Network response was not OK: ${response.status}`);
+      }
+      return await response.json()
+    } catch (error) {
+      console.error('Fetch error:', error)
+      return null
+    }
+  }
+
+  const parseUrlParams = () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    return {
+      nodeId: urlParams.get('node') || null,
+      listId: urlParams.get('list') || null,
+    }
+  }
+
+  const clearContent = () => {
+    contentWrapper.innerHTML = ''
     window.scrollTo(0, 0)
-} 
+  }
 
-const drawImage = async (src, wrapper) => {
-    return new Promise(res => {
-        const img = document.createElement('img')
-        img.onload = () => {
-            wrapper.appendChild(img)
-            res()
-        }
-        img.src = src
-
-        if (minKey === 'w') {
-            img.style.width = w - OW + 'px'
-            img.style.height = 'auto'
-        } else {
-            img.style.height = h - OW + 'px'
-            img.style.width = 'auto'
-        }
+  const drawImage = async (src, wrapper) => {
+    return new Promise((resolve) => {
+      const img = document.createElement('img')
+      if (minKey === 'w') {
+        img.style.width = (w - OFFSET_W) + 'px'
+        img.style.height = 'auto'
+      } else {
+        img.style.height = (h - OFFSET_W) + 'px'
+        img.style.width = 'auto'
+      }
+      img.onload = () => {
+        wrapper.appendChild(img)
+        resolve()
+      }
+      img.src = src
     })
-}
+  }
 
-const drawText = (text, wrapper, size = 16) => {
-    const p = document.createElement("p")
-    p.innerHTML= text
-    p.style.fontSize = size + "px"
+  const drawText = (text, wrapper, size = 16) => {
+    const p = document.createElement('p')
+    p.innerHTML = text
+    p.style.fontSize = `${size}px`
     p.style.height = 'auto'
     p.style.alignContent = 'left'
-    p.style.padding = '0 20px' 
-    if (minKey === 'w') {
-        p.style.width = w - OW + 'px'
-    } else {
-        p.style.width = h - OW + 'px'
-    }
-    wrapper.appendChild(p)
-}
+    p.style.padding = '0 20px'
 
-const drawPreviewNode = async (nodeId) => {    
-    const node = appData.nodes.find(node => node.id === nodeId)
-    console.log('preview node', nodeId, node)
-    if (!node) {
-        console.log('node not found:' + nodeId)
-        return;
+    // Выравниваем ширину под основную сторону
+    if (minKey === 'w') {
+      p.style.width = (w - OFFSET_W) + 'px'
+    } else {
+      p.style.width = (h - OFFSET_W) + 'px'
     }
-    if (!node.isPublished) {
-       return;     
-    }
-    const wrapper = document.querySelector('.content')
+
+    wrapper.appendChild(p)
+  }
+
+  /*********** Рисование элементов *******************************************/
+
+  const drawPreviewNode = async (nodeId) => {
+    const node = appData.nodes.find((n) => n.id === nodeId)
+    if (!node || !node.isPublished) return;
+
     const el = document.createElement('div')
     el.classList.add('view-list-item')
-    wrapper.appendChild(el)
-    const { imgSrc, text } = node.preview
-    if (imgSrc) {
-        await drawImage(imgSrc, el)
-    }
-    if (text) {
-        drawText(text, el)
-    }
     el.addEventListener('click', () => {
         redirectToAndDrawPage('node', nodeId)
-    })
-}
+      });
+    contentWrapper.appendChild(el)
 
-const drawNode = async (nodeId) => {
-    clearContent()
-    const node = appData.nodes.find(node => node.id === nodeId)
-    console.log('draw node', nodeId, node)
-    if (!node) {
-        console.log('node not found:' + nodeId)
-        return;
+    const { imgSrc, text } = node.preview
+    if (imgSrc) {
+      await drawImage(imgSrc, el)
     }
-    if (!node.isPublished) {
-        return;     
+    if (text) {
+      drawText(text, el)
     }
-    if (!node.content) {
-        console.log('node content not found:' + nodeId)
-        return;
-    }
-    const wrapper = document.querySelector('.content')
+  }
 
-    for (let i = 0; i < node.content.length; i++) {
-        if (node.content[i].type === 'img') {
-            await drawImage(node.content[i].src, wrapper)
-        }
-        if (node.content[i].type === 'text') {
-            const { html, size} = node.content[i]  
-            drawText(html, wrapper, size)
-        }
+  const drawNode = async (nodeId) => {
+    const node = appData.nodes.find((n) => n.id === nodeId)
+    if (!node || !node.isPublished || !node.content) {
+      console.warn('Node not found or not published:', nodeId)
+      return;
     }
-}
 
-const drawList = async (listId) => {
-    clearContent()
-    const nodes = appData.nodes.filter(e => {
-        if (!e.tags) {
-            return false;
-        }
-        const is = e.tags.find(t => t === listId)
-        return !!is
-    })
+    for (const block of node.content) {
+      if (block.type === 'img') {
+        await drawImage(block.src, contentWrapper)
+      } else if (block.type === 'text') {
+        drawText(block.html, contentWrapper, block.size);
+      }
+    }
+  }
 
-    for (let i = 0; i < nodes.length; i++) {
-        await drawPreviewNode(nodes[i].id) 
+  const drawList = async (listId) => {
+    const nodes = appData.nodes
+        .filter((n) => n.tags?.includes(listId))
+        .sort((a, b) => b.raiting - a.raiting)
+    for (const node of nodes) {
+      await drawPreviewNode(node.id)
     }
-}
+  }
 
-const redirectToAndDrawPage = async (type, id) => {
-    console.log('*********************************')
-    if (type && id) {
-        window.history.pushState(
-            { someData: 123 },
-            '',                     
-            `?${type}=${id}`
-        );
-    }
-    const params = checkParamsUrl()
-    if (params.nodeId) {
-        await drawNode(params.nodeId)
-    }
-    if (params.listId) {
-        await drawList(params.listId)
-    }
-}
-
-document.addEventListener('DOMContentLoaded', async () => {
-    const links = document.querySelectorAll('.nav-item') 
+  const reDrawMainMenu = (listId) => {
+    const links = document.querySelectorAll('.nav-item')
     links.forEach((link) => {
-        link.addEventListener('click', () => {
-            links.forEach((link) => {
-                link.classList.remove('current')
-            })
-            link.classList.add('current')
-            redirectToAndDrawPage('list', link.id)
-        })
+        link.id === listId 
+            ? link.classList.add('current') 
+            : link.classList.remove('current')
     })
-    const data = await loadJson()
-    appData = data
+  }
+
+  const redirectToAndDrawPage = async (type, id) => {
+    clearContent()
+    if (type && id) {
+      window.history.pushState({ type, id }, '', `?${type}=${id}`)
+    }
+    if (!type) reDrawMainMenu('code')
+    // Парсим текущий URL и рисуем нужный контент
+    const { nodeId, listId } = parseUrlParams()
+    if (nodeId) {
+        await drawNode(nodeId)
+    } else if (listId) {
+        reDrawMainMenu(listId)
+        await drawList(listId)
+    }
+  }
+
+  /*********** Основная логика ***********************************************/
+
+  window.addEventListener('popstate', () => {
+    redirectToAndDrawPage()
+  })
+
+  document.addEventListener('DOMContentLoaded', async () => {
+    const links = document.querySelectorAll('.nav-item')
+    links.forEach((link) => {
+      link.addEventListener('click', () => {
+        redirectToAndDrawPage('list', link.id)
+      })
+    })
+
+    appData = await loadJson('./content.json')
 
     redirectToAndDrawPage()
-})
-
-window.addEventListener('popstate', (event) => {
-    redirectToAndDrawPage()
-})
+  })
+})()

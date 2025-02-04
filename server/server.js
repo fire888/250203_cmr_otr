@@ -7,36 +7,19 @@ const multer = require('multer')
 const app = express()
 const PORT = 3000
 
-async function saveDataAsync(newData) {
+const saveDataAsync = async (newData) => {
   try {
-    let currentData = [];
-    // // 1. Check if file exists
-    // try {
-    //   // 2. Read the file and parse existing JSON
-    //   const fileData = await fs.readFile(filePath, "utf-8");
-    //   currentData = JSON.parse(fileData);
-    // } catch (error) {
-    //   // If file doesn't exist or is invalid, we'll start with an empty array
-    //   console.log("File not found or invalid JSON; starting with an empty array.");
-    // }
-
-    // // 3. Modify the data
-    // currentData.push(newData);
-
-    // 4. Write updated data back to file
-    await fs.writeFile('./public/content.json', JSON.stringify(newData, null, 2));
-
-    console.log("Data saved successfully (async).");
+    await fs.writeFile('./public/content.json', JSON.stringify(newData, null, 2))
+    console.log("Data saved successfully (async).")
   } catch (err) {
     console.error("Error saving data:", err);
   }
 }
 
-
-const uploadDir = path.join(__dirname, '../public/images')
+const UPLOAD_DIR = path.join(__dirname, '../public/images')
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, uploadDir)
+    cb(null, UPLOAD_DIR)
   },
   filename: (req, file, cb) => {
     cb(null, file.originalname)
@@ -44,23 +27,11 @@ const storage = multer.diskStorage({
 })
 const upload = multer({ storage })
 
-
-// Подключаем статические файлы из папки public
-app.use(express.static(path.join(__dirname, '../public')));
-app.use(bodyParser.json());
-
-// Отдаём index.html при GET-запросе на корень
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '../public', 'index.html'));
-});
+app.use(express.static(path.join(__dirname, '../public')))
+app.use(bodyParser.json())
 
 app.get('/edit', (req, res) => {
-  res.sendFile(path.join(__dirname, '../public', 'index-edit.html'));
-});
-
-app.post('/api/updateAppData', async (req, res) => {
-    await saveDataAsync(req.body.appData)
-    res.sendStatus(200)
+  res.sendFile(path.join(__dirname, '../public', 'index-edit.html'))
 })
 
 app.post('/api/updateAppData', async (req, res) => {
@@ -79,11 +50,8 @@ app.post('/api/upload-image', upload.single('file'), (req, res) => {
 })
 
 app.post('/api/delete-image', async (req, res) => {
-  console.log(req.body)
   const { fileName } = req.body
   fs.unlink('./public/images/' + fileName, (err) => {
-      console.log('Колбэк fs.unlink вызван!');
-    
       if (err) {
         console.error('Ошибка при удалении:', err);
         return; 
@@ -93,7 +61,6 @@ app.post('/api/delete-image', async (req, res) => {
   res.sendStatus(200)
 })
 
-// Запуск
 app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);
 });
