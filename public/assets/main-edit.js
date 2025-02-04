@@ -7,7 +7,7 @@ const getFormattedDate = () => {
     const minutes = String(date.getMinutes()).padStart(2, '0')
     const seconds = String(date.getSeconds()).padStart(2, '0')
     return `${year}${month}${day}_${hours}${minutes}${seconds}`
-  }
+}
 
 const url = window.location.origin
 const postDataToServer = async (data) => {
@@ -35,7 +35,6 @@ const postDataToServer = async (data) => {
             })
     })
 }
-
 const postFileToServer = (data) => {
     return new Promise((resolve, reject) => {
         fetch(url + '/api/upload-image', {
@@ -49,9 +48,7 @@ const postFileToServer = (data) => {
             return response.json(); // or response.text(), depending on server response
           })
           .then(data => {
-            //console.log('Upload successful:', data);
             resolve(data)
-            //alert('Upload successful!');
           })
           .catch(error => {
             console.error('Upload error:', error);
@@ -59,7 +56,6 @@ const postFileToServer = (data) => {
           });
     })
 }
-
 const deleteFileFromServer = async (fileName) => {
     const response = await fetch(url + '/api/delete-image', {
       method: 'POST',
@@ -68,19 +64,11 @@ const deleteFileFromServer = async (fileName) => {
       },
       body: JSON.stringify({ fileName })
     });
-  
-    console.log('HHHHH on remove', response)
     if (!response.ok) {
-
       throw new Error('Network response was not ok: ' + response.status);
     }
-  
-    //const data = await response.json();
-    //console.log('Delete successful:', data);
     return 'Delete successful';
 }
-
-
 // Загружаем JSON-файл с помощью fetch
 const loadJson = () => {
     return new Promise(res => {
@@ -108,7 +96,6 @@ const checkParamsUrl = () => {
         listId: null, 
     }
     for (const [key, value] of urlParams.entries()) {
-        console.log(key, value);
         if (key === 'node') {
             data.nodeId = value
         }
@@ -134,6 +121,12 @@ const OW = 50 // offsetW
 let appData = null
 
 /** elements node ******************************** */
+
+const drawEmptyLine = (wrapper, h = 30) => {
+    const elem = document.createElement('div')
+    elem.style.minHeight = h + 'px'
+    wrapper.appendChild(elem)
+}
 const drawImage = async (src, wrapper) => {
     return new Promise(res => {
         const img = document.createElement('img')
@@ -211,12 +204,6 @@ const drawNode = async (nodeId) => {
     if (!node.isPublished) {
         return;     
     }
-    if (!node.content) {
-        console.log('node content not found:' + nodeId)
-        return;
-    }
-    console.log('nodecontent', nodeId, node.content)
-
 
     const wrapper = document.querySelector('.content')
 
@@ -327,15 +314,7 @@ const formsEditNode = async (nodeId = null) => {
             : redirectToAndDrawPage()
     })
     wrapper.appendChild(close)
-
-    const raiting = document.createElement('input')
-    raiting.type = 'text'
-    raiting.placeholder = 'raiting'
-    raiting.value = nodeData.raiting
-    raiting.addEventListener('change', () => {
-        nodeData.raiting = raiting.value
-    })
-    wrapper.appendChild(raiting)
+    drawEmptyLine(wrapper)
 
     const title = document.createElement('input')
     title.type = 'text'
@@ -345,6 +324,15 @@ const formsEditNode = async (nodeId = null) => {
         nodeData.title = title.value
     })
     wrapper.appendChild(title)
+
+    const raiting = document.createElement('input')
+    raiting.type = 'text'
+    raiting.placeholder = 'raiting'
+    raiting.value = nodeData.raiting
+    raiting.addEventListener('change', () => {
+        nodeData.raiting = raiting.value
+    })
+    wrapper.appendChild(raiting)
 
     const wrIsPublished = document.createElement('div')
     const checkbox = document.createElement('input')
@@ -367,12 +355,13 @@ const formsEditNode = async (nodeId = null) => {
         nodeData.preview.text = previewText.value
     })
     wrapper.appendChild(previewText)
+    drawEmptyLine(wrapper)
 
     // preview image *************************************************/
-    const S = 50
+    const S = 250
     const showImage = document.createElement('img')
-    showImage.style.width = S + 'px'
-    showImage.style.height = S + 'px'
+    showImage.style.width = 50 + 'px'
+    showImage.style.height = 50 + 'px'
     if (nodeData.preview.imgSrc) {
         showImage.src = nodeData.preview.imgSrc
     }
@@ -416,6 +405,7 @@ const formsEditNode = async (nodeId = null) => {
         }
     })
     wrapper.appendChild(remove)
+    drawEmptyLine(wrapper)
 
 
     // tags *****************************************************/
@@ -467,10 +457,6 @@ const formsEditNode = async (nodeId = null) => {
         }
         wr.appendChild(select)
     
-        select.addEventListener('change', () => {
-          console.log('Выбрано значение:', select.value)
-        })
-
         const remove = document.createElement('button')
         remove.innerText = 'insert current tag'
         remove.addEventListener('click', () => {
@@ -487,16 +473,81 @@ const formsEditNode = async (nodeId = null) => {
     createButtAddTag.innerText = 'add new tag'
     createButtAddTag.addEventListener('click', () => addTagDropdown())
     wrapper.appendChild(createButtAddTag)
+    drawEmptyLine(wrapper)
 
+
+    /** CONTENT ********************************************/ 
+    /** ****************************************************/ 
+
+    // order content node for move bottom/top
     const contentWrapper = document.createElement('div')
     wrapper.appendChild(contentWrapper)
+    const createOrderContent = (wrapper) => {
+        const elems = []
+        return { 
+            addElem: ({ contentId, dom }) => {
+                elems.push({ contentId, dom })
+                wrapper.appendChild(dom) 
+            },
+            destroyElem: (contentId) => {
+                let index = null
+                for (let i = 0; i < elems.length; ++i) {
+                    if (elems[i].contentId !== contentId) continue;
+                    index = i
+                    break; 
+                }
+                if (index !== null)
+                elems[index].dom.innerHTML = ''
+                wrapper.removeChild(elems[index].dom)
+                elems.splice(index, 1)
+            },
+            moveTop: (contentId) => {
+                let prevIndex = null
+                let currentIndex = null
+                for (let i = 0; i < elems.length - 1; ++i) {
+                    if (elems[i + 1].contentId !== contentId) continue;
+                    prevIndex = i
+                    currentIndex = i + 1
+                    break;
+                }
+                if (currentIndex === null || prevIndex === null) return;
+                wrapper.insertBefore(elems[currentIndex].dom, elems[prevIndex].dom)
+                const saved = elems[prevIndex]
+                elems[prevIndex] = elems[currentIndex]
+                elems[currentIndex] = saved
+            },
+            moveBottom: (contentId) => {
+                let currentIndex = null
+                let nextIndex = null
+                for (let i = 0; i < elems.length - 1; ++i) {
+                    if (elems[i].contentId !== contentId) continue;
+                    currentIndex = i
+                    nextIndex = i + 1
+                    break;
+                }
+                if (currentIndex === null || nextIndex === null) return;
+                if (elems[nextIndex].dom.nextSibling) {
+                  wrapper.insertBefore(elems[currentIndex].dom, elems[nextIndex].dom.nextSibling);
+                } else {
+                  wrapper.appendChild(elems[currentIndex].dom);
+                }
+                const saved = elems[nextIndex]
+                elems[nextIndex] = elems[currentIndex]
+                elems[currentIndex] = saved
+            },
+            getOrder: () => {
+                return elems.map(e => e.contentId)
+            }
+        }
+    }
+    const orderContent = createOrderContent(contentWrapper)
 
     // create text **********************************************/
     const createElementText = (data) => {
         const wr = document.createElement('div')
-        contentWrapper.appendChild(wr)
-
         const contentId = data ? data.contentId : Math.floor(Math.random() * 1000) + '_contentId'
+        orderContent.addElem({ contentId, dom: wr })
+        
         const txt = document.createElement('input')
         txt.type = 'text'
         txt.placeholder = 'content text'
@@ -527,21 +578,21 @@ const formsEditNode = async (nodeId = null) => {
         const remove = document.createElement('button')
         remove.innerText = 'remove'
         remove.addEventListener('click', () => {
-            wr.innerHTML = ''
-            contentWrapper.removeChild(wr)
+            orderContent.destroyElem(contentId)
+
             nodeData.content = nodeData.content.filter(item => item.contentId !== contentId)
         })
         wr.appendChild(remove)
         const moveTop = document.createElement('button')
         moveTop.innerText = 'moveTop'
         moveTop.addEventListener('click', () => {
-            console.log('HHH, top')
+            orderContent.moveTop(contentId)
         })
         wr.appendChild(moveTop)
         const moveBottom = document.createElement('button')
         moveBottom.innerText = 'moveBottom'
         moveBottom.addEventListener('click', () => {
-            console.log('HH, bottom')
+            orderContent.moveBottom(contentId)
         })
         wr.appendChild(moveBottom)
     }
@@ -549,14 +600,13 @@ const formsEditNode = async (nodeId = null) => {
     /** create content image **************************************/
     const createElementImage = (existContentElem = null) => {
         const wr = document.createElement('div');
-        contentWrapper.appendChild(wr);
-
         const contentId = existContentElem ? existContentElem.contentId : Math.floor(Math.random() * 1000) + '_contentId';
-    
-        const S = 50;
-        const showImage = document.createElement('img');
-        showImage.style.width = S + 'px';
-        showImage.style.height = S + 'px';
+        orderContent.addElem({ contentId, dom: wr })
+
+        const S = 50
+        const showImage = document.createElement('img')
+        showImage.style.width = S + 'px'
+        showImage.style.height = S + 'px'
         if (existContentElem && existContentElem.src) {
             showImage.src = existContentElem.src
         }
@@ -612,13 +662,13 @@ const formsEditNode = async (nodeId = null) => {
         const moveTop = document.createElement('button')
         moveTop.innerText = 'moveTop'
         moveTop.addEventListener('click', () => {
-            console.log('HHH, top')
+            orderContent.moveTop(contentId)
         })
         wr.appendChild(moveTop)
         const moveBottom = document.createElement('button')
         moveBottom.innerText = 'moveBottom'
         moveBottom.addEventListener('click', () => {
-            console.log('HH, bottom')
+            orderContent.moveBottom(contentId)
         })
         wr.appendChild(moveBottom)
     }
@@ -632,6 +682,8 @@ const formsEditNode = async (nodeId = null) => {
         }
     }
 
+    drawEmptyLine(wrapper)
+
     const createButtAddText = document.createElement('button')
     createButtAddText.innerText = 'add content text'
     createButtAddText.addEventListener('click', () => createElementText())
@@ -642,13 +694,14 @@ const formsEditNode = async (nodeId = null) => {
     createContentImage.addEventListener('click', () => createElementImage())
     wrapper.appendChild(createContentImage)
 
+    drawEmptyLine(wrapper)
+
     // save *******************************************************/
     const save = document.createElement('button')
     save.innerText = 'save'
     save.addEventListener('click', async () => {
         if (nodeData.preview.imageCandidate) {
             if (nodeData.preview.imageCandidate.message === "mustDelete") {
-                console.log('&&&&---')
                 if (nodeData.preview.imgSrc) {
                     const name = nodeData.preview.imgSrc.split('/').pop()
                     try {
@@ -661,7 +714,10 @@ const formsEditNode = async (nodeId = null) => {
                 delete nodeData.preview.imageCandidate
             }
 
-            if (nodeData.preview.imageCandidate && nodeData.preview.imageCandidate.canvasPreview) {
+            if (
+                nodeData.preview.imageCandidate && 
+                nodeData.preview.imageCandidate.canvasPreview
+            ) {
                 if (nodeData.preview.imgSrc) {
                     const name = nodeData.preview.imgSrc.split('/').pop()
                     try {
@@ -719,6 +775,17 @@ const formsEditNode = async (nodeId = null) => {
                 }
             }
         }
+        const order = orderContent.getOrder()
+        const arr = []
+        for (let i = 0; i < order.length; ++i) {
+            const contentId = order[i]
+            for (let j = 0; j < nodeData.content.length; ++j) {
+                if (nodeData.content[j].contentId !== contentId) continue;
+                arr.push(nodeData.content[j])
+            }
+        }
+        nodeData.content = arr
+
         if (!nodeId) {
             appData.nodes.splice(0, 0, nodeData)
         } else {

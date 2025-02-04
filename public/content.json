@@ -6,31 +6,45 @@
       "isPublished": true,
       "preview": {
         "text": "",
-        "imgSrc": "./images/250204_114931_pr.jpg"
+        "imgSrc": "./images/250204_145049_pr.jpg"
       },
       "tags": [
-        "code",
-        "art",
-        "design",
         "zbrush"
       ],
       "raiting": "103",
       "content": [
         {
-          "contentId": "758_contentId",
-          "type": "text",
-          "html": "17:38 content text"
-        },
-        {
-          "contentId": "556_contentId",
-          "type": "text",
-          "html": "vvvv"
-        },
-        {
-          "contentId": "78_contentId",
+          "contentId": "938_contentId",
           "type": "img",
-          "src": "./images/250204_000531_c.jpg",
-          "fileName": "250204_000531_c.jpg"
+          "src": "./images/250204_143505_c.jpg",
+          "fileName": "250204_143505_c.jpg"
+        },
+        {
+          "contentId": "276_contentId",
+          "type": "text",
+          "html": "00001"
+        },
+        {
+          "contentId": "285_contentId",
+          "type": "img",
+          "src": "./images/250204_145110_c.jpg",
+          "fileName": "250204_145110_c.jpg"
+        },
+        {
+          "contentId": "897_contentId",
+          "type": "text",
+          "html": "0002"
+        },
+        {
+          "contentId": "602_contentId",
+          "type": "img",
+          "src": "./images/250204_145120_c.jpg",
+          "fileName": "250204_145120_c.jpg"
+        },
+        {
+          "contentId": "928_contentId",
+          "type": "text",
+          "html": "0003"
         }
       ]
     },
