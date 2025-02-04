@@ -75,9 +75,9 @@ const deleteFileFromServer = async (fileName) => {
       throw new Error('Network response was not ok: ' + response.status);
     }
   
-    const data = await response.json();
-    console.log('Delete successful:', data);
-    return data;
+    //const data = await response.json();
+    //console.log('Delete successful:', data);
+    return 'Delete successful';
 }
 
 
@@ -369,7 +369,7 @@ const formsEditNode = async (nodeId = null) => {
     wrapper.appendChild(previewText)
 
     // preview image *************************************************/
-    const S = 250
+    const S = 50
     const showImage = document.createElement('img')
     showImage.style.width = S + 'px'
     showImage.style.height = S + 'px'
@@ -380,7 +380,6 @@ const formsEditNode = async (nodeId = null) => {
     const prImgInput = document.createElement('input')
     prImgInput.type = 'file'
     prImgInput.accept = 'image/*'
-    let canvasPreview = null
     prImgInput.addEventListener('change', () => {
         const file = prImgInput.files[0]
         const reader = new FileReader()
@@ -391,19 +390,32 @@ const formsEditNode = async (nodeId = null) => {
               const maxWidth = S
               const scaleFactor = maxWidth / img.width
     
-              canvasPreview = document.createElement('canvas');
+              const canvasPreview = document.createElement('canvas');
               canvasPreview.width = maxWidth
               canvasPreview.height = img.height * scaleFactor
               const ctx = canvasPreview.getContext('2d');
               ctx.drawImage(img, 0, 0, canvasPreview.width, canvasPreview.height);
               const resizedDataUrl = canvasPreview.toDataURL('image/jpeg', 1);
               showImage.src = resizedDataUrl;
+
+              nodeData.preview.imageCandidate = { canvasPreview }
             }
             img.src = originalDataUrl
         })
         reader.readAsDataURL(file)
     })
     wrapper.appendChild(prImgInput)
+    const remove = document.createElement('button')
+    remove.innerText = 'delete'
+    remove.addEventListener('click', () => {
+        showImage.removeAttribute("src");
+        if (nodeData.preview.imageCandidate) {
+            nodeData.preview.imageCandidate.message = "mustDelete" 
+        } else {
+            nodeData.preview.imageCandidate = { message: "mustDelete" }
+        }
+    })
+    wrapper.appendChild(remove)
 
 
     // tags *****************************************************/
@@ -541,7 +553,7 @@ const formsEditNode = async (nodeId = null) => {
 
         const contentId = existContentElem ? existContentElem.contentId : Math.floor(Math.random() * 1000) + '_contentId';
     
-        const S = 250;
+        const S = 50;
         const showImage = document.createElement('img');
         showImage.style.width = S + 'px';
         showImage.style.height = S + 'px';
@@ -634,28 +646,45 @@ const formsEditNode = async (nodeId = null) => {
     const save = document.createElement('button')
     save.innerText = 'save'
     save.addEventListener('click', async () => {
-        if (canvasPreview) {
-            if (nodeData.preview.imgSrc) {
-                const name = nodeData.preview.imgSrc.split('/').pop()
-                try {
-                    const result = await deleteFileFromServer(name)
-                } catch (error) {
-                    console.log('error', error)
+        if (nodeData.preview.imageCandidate) {
+            if (nodeData.preview.imageCandidate.message === "mustDelete") {
+                console.log('&&&&---')
+                if (nodeData.preview.imgSrc) {
+                    const name = nodeData.preview.imgSrc.split('/').pop()
+                    try {
+                        const result = await deleteFileFromServer(name)
+                    } catch (error) {
+                        console.log('error', error)
+                    }
                 }
+                delete nodeData.preview.imgSrc
+                delete nodeData.preview.imageCandidate
             }
-            
-            const convertImg = (canvas) => {
-                return new Promise(res => {
-                    canvas.toBlob((blob) => { res(blob) }, 'image/jpeg', 1)
-                })
-            }
-            const fileName = getFormattedDate() + '_pr.jpg'
-            const blob = await convertImg(canvasPreview)
-            const formData = new FormData()
-            formData.append('file', blob, fileName)
-            const resultPost = await postFileToServer(formData)
-            if (resultPost && resultPost.file && resultPost.file.filename && resultPost.file.filename === fileName) {
-                nodeData.preview.imgSrc = './images/' + fileName
+
+            if (nodeData.preview.imageCandidate && nodeData.preview.imageCandidate.canvasPreview) {
+                if (nodeData.preview.imgSrc) {
+                    const name = nodeData.preview.imgSrc.split('/').pop()
+                    try {
+                        const result = await deleteFileFromServer(name)
+                    } catch (error) {
+                        console.log('error', error)
+                    }
+                }
+
+                const convertImg = (canvas) => {
+                    return new Promise(res => {
+                        canvas.toBlob((blob) => { res(blob) }, 'image/jpeg', 1)
+                    })
+                }
+                const fileName = getFormattedDate() + '_pr.jpg'
+                const blob = await convertImg(nodeData.preview.imageCandidate.canvasPreview)
+                const formData = new FormData()
+                formData.append('file', blob, fileName)
+                const resultPost = await postFileToServer(formData)
+                if (resultPost && resultPost.file && resultPost.file.filename && resultPost.file.filename === fileName) {
+                    nodeData.preview.imgSrc = './images/' + fileName
+                    delete nodeData.preview.imageCandidate
+                }
             }
         }
 
@@ -681,7 +710,6 @@ const formsEditNode = async (nodeId = null) => {
 
                 const { contentId, formData, fileName, message } = contentItem.newDataCandidate
                 if (message === 'mustDelete') {
-                    console.log('YYY')
                     nodeData.content.splice(i, 1)
                     --i
                 } else {
