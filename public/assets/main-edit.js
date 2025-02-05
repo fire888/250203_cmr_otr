@@ -9,85 +9,50 @@ const getFormattedDate = () => {
     return `${year}${month}${day}_${hours}${minutes}${seconds}`
 }
 
+/******** API  *******************************************************/
+
 const url = window.location.origin
-const postDataToServer = async (data) => {
-    return new Promise((resolve, reject) => {
-        fetch(url + '/api/updateAppData', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ appData: data })
-        })
-            .then(response => {
-                if (!response.ok) {
-                    // Handle HTTP errors
-                    throw new Error(`HTTP error! Status: ${response.status}`)
-                }
-                return response
-            })
-            .then(data => {
-                console.log('Server response:', data)
-                resolve(data)
-            })
-            .catch(error => {
-                console.error('Error:', error)
-            })
-    })
+const loadJson = async () => {
+    const response = await fetch('./content.json')
+    if (!response.ok) {
+        throw new Error('Network response was not OK: ' + response.status)
+    }
+    const data = await response.json()
+    return data
 }
-const postFileToServer = (data) => {
-    return new Promise((resolve, reject) => {
-        fetch(url + '/api/upload-image', {
-            method: 'POST',
-            body: data
-          })
-          .then(response => {
-            if (!response.ok) {
-              throw new Error('Network response was not ok: ' + response.status);
-            }
-            return response.json(); // or response.text(), depending on server response
-          })
-          .then(data => {
-            resolve(data)
-          })
-          .catch(error => {
-            console.error('Upload error:', error);
-            alert('Upload failed!');
-          });
+const postDataToServer = async (data) => {
+    const response = await fetch(url + '/api/updateAppData', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ appData: data })
     })
+    if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`)
+    }
+    return 'Update successful'
+}
+const postFileToServer = async (data) => {
+    const result = await fetch('./api/upload-image', {
+        method: 'POST',
+        body: data
+    })
+    if (!result.ok) {
+        throw new Error('Network response was not ok: ' + result.status)
+    }
+    return 'upload successful'
 }
 const deleteFileFromServer = async (fileName) => {
-    const response = await fetch(url + '/api/delete-image', {
+    const response = await fetch('/api/delete-image', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
+      headers: { 'Content-Type': 'application/json'},
       body: JSON.stringify({ fileName })
-    });
-    if (!response.ok) {
-      throw new Error('Network response was not ok: ' + response.status);
-    }
-    return 'Delete successful';
-}
-// Загружаем JSON-файл с помощью fetch
-const loadJson = () => {
-    return new Promise(res => {
-        fetch('./content.json')
-        .then(response => {
-          if (!response.ok) {
-            throw new Error('Network response was not OK: ' + response.status);
-          }
-          return response.json();
-        })
-        .then(data => {
-          res(data)
-        })
-        .catch(error => {
-          console.error('Fetch error:', error);
-        });
     })
+    if (!response.ok) {
+      throw new Error('Delete file not successful: ' + response.status)
+    }
+    return 'Delete successful'
 }
-// check parameters from url
+
 const checkParamsUrl = () => {
     const queryString = window.location.search
     const urlParams = new URLSearchParams(queryString)
@@ -106,8 +71,8 @@ const checkParamsUrl = () => {
     return data
 }
 
-/** GLOBAL DATA **********************************/
-// window
+/** GLOBAL DATA ***********************************************/
+
 let w = window.innerWidth
 let h = window.innerHeight
 let minKey = w < h ? 'w' : 'h'
@@ -117,32 +82,44 @@ document.addEventListener('resize', () => {
     minKey = w < h ? 'w' : 'h'
 })
 const OW = 50 // offsetW
-// app data
 let appData = null
 
-/** elements node ******************************** */
+/** elements node ********************************************/
+
+const createElem = (type, parent = null, html = '', className = null) => {
+    const elem = document.createElement(type)
+    className && elem.classList.add(className)
+    html && (elem.innerText = html)
+    parent && parent.appendChild(elem)
+    return elem
+}
 
 const drawEmptyLine = (wrapper, h = 30) => {
-    const elem = document.createElement('div')
+    const elem = createElem('div', wrapper)
     elem.style.minHeight = h + 'px'
-    wrapper.appendChild(elem)
 }
+const drawAlert = () => new Promise(res => { 
+    const alrt = createElem('div', document.body, '', 'alert')
+    createElem('button', alrt, '✖️').onclick = () => {
+        alrt.innerHTML = ''
+        document.body.removeChild(alrt)
+        res(false)
+    }   
+    createElem('button', alrt, '✅').onclick = () => {
+        alrt.innerHTML = ''
+        document.body.removeChild(alrt)
+        res(true)
+    }
+})
 const drawImage = async (src, wrapper) => {
     return new Promise(res => {
         const img = document.createElement('img')
+        img.style.height = '200px'
         img.onload = () => {
             wrapper.appendChild(img)
             res()
         }
         img.src = src
-
-        if (minKey === 'w') {
-            img.style.width = w - OW + 'px'
-            img.style.height = 'auto'
-        } else {
-            img.style.height = h - OW + 'px'
-            img.style.width = 'auto'
-        }
     })
 }
 const drawText = (text, wrapper, size = 16) => {
@@ -152,15 +129,10 @@ const drawText = (text, wrapper, size = 16) => {
     p.style.height = 'auto'
     p.style.alignContent = 'left'
     p.style.padding = '0 20px' 
-    if (minKey === 'w') {
-        p.style.width = w - OW + 'px'
-    } else {
-        p.style.width = h - OW + 'px'
-    }
     wrapper.appendChild(p)
 }
 /** node ********************************** */
-const drawPreviewNode = async (nodeId) => {    
+const drawPreviewNode = async (nodeId, wrapper) => {    
     const node = appData.nodes.find(node => node.id === nodeId)
     if (!node) {
         console.log('node not found:' + nodeId)
@@ -169,24 +141,26 @@ const drawPreviewNode = async (nodeId) => {
     if (!node.isPublished) {
        return;     
     }
-    const wrapper = document.querySelector('.content')
     const el = document.createElement('div')
-    const data = document.createElement('div')
-    data.classList.add('code')
-    data.innerHTML = JSON.stringify(node, null, 2) // node
-    el.appendChild(data)
     el.classList.add('view-list-item')
     wrapper.appendChild(el)
+    //const data = document.createElement('div')
+    //data.classList.add('code')
+    //data.innerHTML = JSON.stringify(node, null, 2) // node
+    //el.appendChild(data)
     const { imgSrc, text } = node.preview
-    if (imgSrc) {
-        try {
-            await drawImage(imgSrc, el) 
-        } catch (error) {
-            console.error(error)
+    imgSrc && await drawImage(imgSrc, el) 
+    text && drawText(text, el)
+    if (!imgSrc && !text) {
+        drawText(node.id, el)
+        node.title && drawText(node.title, el)
+        node.tags.length > 0 && drawText(JSON.stringify(node.tags), el)
+        if (node.content[0] && node.content[0].type === 'img') {
+            await drawImage(node.content[0].src, el)
         }
-    }
-    if (text) {
-        drawText(text, el)
+        if (node.content[1] && node.content[1].type === 'text') {
+            drawText(node.content[1].html, el)
+        }
     }
     el.addEventListener('click', () => {
         redirectToAndDrawPage('node', nodeId)
@@ -207,22 +181,21 @@ const drawNode = async (nodeId) => {
 
     const wrapper = document.querySelector('.content')
 
-    const data = document.createElement('div')
-    data.classList.add('code')
-    data.innerHTML = JSON.stringify(node, null, 2) // node
-    wrapper.appendChild(data)
-
     const edit = document.createElement('button')
-    edit.innerHTML = 'edit'
+    edit.innerHTML = '✏️✏️✏️✏️✏️✏️✏️✏️'
     wrapper.appendChild(edit)
     edit.addEventListener('click', async () => {
         wrapper.removeChild(edit)
         formsEditNode(nodeId)
     })
     const del = document.createElement('button')
-    del.innerHTML = 'delete'
+    del.innerHTML = '❌❌❌❌❌❌❌❌❌'
     wrapper.appendChild(del)
     del.addEventListener('click', async () => {
+        const isOk = await drawAlert()
+        if (!isOk) {
+            return;
+        }
         appData.nodes = appData.nodes.filter(n => n.id !== nodeId)
         await postDataToServer(appData)
         redirectToAndDrawPage()
@@ -237,11 +210,17 @@ const drawNode = async (nodeId) => {
             drawText(html, wrapper, size)
         }
     }
+
+    const data = document.createElement('div')
+    data.classList.add('code')
+    data.innerHTML = JSON.stringify(node, null, 2) // node
+    wrapper.appendChild(data)
 }
 /** list ********************************************************** */
 const drawList = async (listId) => {
     const addNewNodeButton = document.querySelector('.add-new-node')
     addNewNodeButton.style.display = 'block'  
+    const contentWrapper = document.querySelector('.content')
 
     let nodes
     if (listId) { 
@@ -254,7 +233,7 @@ const drawList = async (listId) => {
     }
     nodes = nodes.sort((a, b) => b.raiting - a.raiting)
     for (let i = 0; i < nodes.length; i++) {
-        await drawPreviewNode(nodes[i].id) 
+        await drawPreviewNode(nodes[i].id, contentWrapper) 
     }
 }
 /** reset page ********************************************/
@@ -574,6 +553,7 @@ const formsEditNode = async (nodeId = null) => {
             }
         })
         wr.appendChild(txt)
+        drawEmptyLine(wr, 1)
 
         const remove = document.createElement('button')
         remove.innerText = '✖️'
@@ -595,6 +575,7 @@ const formsEditNode = async (nodeId = null) => {
             orderContent.moveBottom(contentId)
         })
         wr.appendChild(moveBottom)
+        drawEmptyLine(wr, 10)
     }
 
     /** create content image **************************************/
@@ -647,9 +628,12 @@ const formsEditNode = async (nodeId = null) => {
             }    
         })
         wr.appendChild(imgInput)
+        drawEmptyLine(wr, 1)
         const remove = document.createElement('button')
         remove.innerText = '✖️'
-        remove.addEventListener('click', () => {
+        remove.addEventListener('click', async () => {
+            const isOk = await drawAlert()
+            if (!isOk) return;
             if (existContentElem) {
                 existContentElem.newDataCandidate = { contentId, message: 'mustDelete', type: 'img' }
             } else {
@@ -671,6 +655,7 @@ const formsEditNode = async (nodeId = null) => {
             orderContent.moveBottom(contentId)
         })
         wr.appendChild(moveBottom)
+        drawEmptyLine(wr, 10)
     }
 
     for (let i = 0; i < nodeData.content.length; i++) {
@@ -698,7 +683,7 @@ const formsEditNode = async (nodeId = null) => {
 
     // save *******************************************************/
     const save = document.createElement('button')
-    save.innerText = '✏️'
+    save.innerText = '✅✅✅✅✅✅'
     save.addEventListener('click', async () => {
         if (nodeData.preview.imageCandidate) {
             if (nodeData.preview.imageCandidate.message === "mustDelete") {
@@ -737,7 +722,7 @@ const formsEditNode = async (nodeId = null) => {
                 const formData = new FormData()
                 formData.append('file', blob, fileName)
                 const resultPost = await postFileToServer(formData)
-                if (resultPost && resultPost.file && resultPost.file.filename && resultPost.file.filename === fileName) {
+                if (resultPost === 'upload successful') {
                     nodeData.preview.imgSrc = './images/' + fileName
                     delete nodeData.preview.imageCandidate
                 }
@@ -767,8 +752,10 @@ const formsEditNode = async (nodeId = null) => {
                     --i
                 } else {
                     const resultPost = await postFileToServer(formData)
-                    nodeData.content[i] = contentItem.newDataCandidate
-                    delete nodeData.content[i].formData
+                    if (resultPost === 'upload successful') {
+                        nodeData.content[i] = contentItem.newDataCandidate
+                        delete nodeData.content[i].formData
+                    }
                 }
             }
         }
