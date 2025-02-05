@@ -86,7 +86,7 @@ let appData = null
 
 /** elements node ********************************************/
 
-const createElem = (type, parent = null, html = '', className = null) => {
+const drawElem = (type, parent = null, html = '', className = null) => {
     const elem = document.createElement(type)
     className && elem.classList.add(className)
     html && (elem.innerText = html)
@@ -94,18 +94,27 @@ const createElem = (type, parent = null, html = '', className = null) => {
     return elem
 }
 
+const drawInput = (wrapper, type, value, placeholder) => {
+    const elem = document.createElement('input')
+    wrapper.appendChild(elem)
+    elem.type = type
+    value && (elem.value = value)
+    placeholder && (elem.placeholder = placeholder)
+    return elem
+}
+
 const drawEmptyLine = (wrapper, h = 30) => {
-    const elem = createElem('div', wrapper)
+    const elem = drawElem('div', wrapper)
     elem.style.minHeight = h + 'px'
 }
 const drawAlert = () => new Promise(res => { 
-    const alrt = createElem('div', document.body, '', 'alert')
-    createElem('button', alrt, '✖️').onclick = () => {
+    const alrt = drawElem('div', document.body, '', 'alert')
+    drawElem('button', alrt, '✖️').onclick = () => {
         alrt.innerHTML = ''
         document.body.removeChild(alrt)
         res(false)
     }   
-    createElem('button', alrt, '✅').onclick = () => {
+    drawElem('button', alrt, '✅').onclick = () => {
         alrt.innerHTML = ''
         document.body.removeChild(alrt)
         res(true)
@@ -138,13 +147,16 @@ const drawPreviewNode = async (nodeId, wrapper) => {
         console.log('node not found:' + nodeId)
         return;
     }
-    if (!node.isPublished) {
-       return;     
-    }
-    const el = createElem('div', wrapper, null, 'view-list-item')
+
+    const el = drawElem('div', wrapper, null, 'view-list-item')
     el.addEventListener('click', () => {
         redirectToAndDrawPage('node', nodeId)
     })
+
+    if (!node.isPublished) {
+       el.classList.add('red')    
+    }
+
     //const data = document.createElement('div')
     //data.classList.add('code')
     //data.innerHTML = JSON.stringify(node, null, 2) // node
@@ -173,17 +185,14 @@ const drawNode = async (nodeId) => {
         console.log('node not found:' + nodeId)
         return;
     }
-    if (!node.isPublished) {
-        return;     
-    }
 
     const wrapper = document.querySelector('.content')
 
-    createElem('button', wrapper, '✏️✏️✏️✏️✏️✏️✏️✏️').addEventListener('click', e => {
+    drawElem('button', wrapper, '✏️✏️✏️✏️✏️✏️✏️✏️').addEventListener('click', e => {
         wrapper.removeChild(e.target)
         formsEditNode(nodeId)
     })
-    createElem('button', wrapper, '🗑️🗑️🗑️🗑️🗑️🗑️🗑️').addEventListener('click', async e => {
+    drawElem('button', wrapper, '🗑️🗑️🗑️🗑️🗑️🗑️🗑️').addEventListener('click', async e => {
         const isOk = await drawAlert()
         if (!isOk) {
             return;
@@ -192,7 +201,9 @@ const drawNode = async (nodeId) => {
         await postDataToServer(appData)
         redirectToAndDrawPage()
     })
-
+    if (!node.isPublished) {
+        drawElem('div', wrapper, 'NOT PUBLISHED', 'red')     
+    }
     for (let i = 0; i < node.content.length; i++) {
         if (node.content[i].type === 'img') {
             await drawImage(node.content[i].src, wrapper)
@@ -203,7 +214,7 @@ const drawNode = async (nodeId) => {
         }
     }
 
-    createElem('div', wrapper, JSON.stringify(node, null, 2), 'code')
+    drawElem('div', wrapper, JSON.stringify(node, null, 2), 'code')
 }
 /** list ********************************************************** */
 const drawList = async (listId) => {
@@ -243,14 +254,14 @@ const redirectToAndDrawPage = async (type = null, id = null) => {
     }
 
     const params = checkParamsUrl()
-    if (!params.nodeId && !params.listId) {
-        await drawList(null)
-    }
     if (params.nodeId) {
         await drawNode(params.nodeId)
     }
     if (params.listId) {
         await drawList(params.listId)
+    }
+    if (!params.nodeId && !params.listId) {
+        await drawList(null)
     }
 }
 
@@ -274,51 +285,32 @@ const formsEditNode = async (nodeId = null) => {
     document.querySelector('.add-new-node').style.display = 'none'
     const wrapper = document.querySelector('.edit-node')
 
-    createElem('button', wrapper, '↗️').addEventListener('click', () => {
+    drawElem('button', wrapper, '↗️').addEventListener('click', () => {
         nodeId 
             ? redirectToAndDrawPage('node', nodeId) 
             : redirectToAndDrawPage()
     })
     drawEmptyLine(wrapper)
 
-    const title = document.createElement('input')
-    title.type = 'text'
-    title.placeholder = 'title'
-    title.value = nodeData.title
-    title.addEventListener('change', () => {
-        nodeData.title = title.value
+    drawInput(wrapper, 'text', nodeData.title, 'title').addEventListener('change', e => {
+        nodeData.title = e.target.value
     })
-    wrapper.appendChild(title)
-
-    const raiting = document.createElement('input')
-    raiting.type = 'text'
-    raiting.placeholder = 'raiting'
-    raiting.value = nodeData.raiting
-    raiting.addEventListener('change', () => {
-        nodeData.raiting = raiting.value
+    drawInput(wrapper, 'text', nodeData.raiting, 'raiting').addEventListener('change', e => {
+        nodeData.raiting = e.target.value
     })
-    wrapper.appendChild(raiting)
 
-    const wrIsPublished = document.createElement('div')
-    wrapper.appendChild(wrIsPublished)
+    const wrIsPublished = drawElem('div', wrapper)
 
-    const checkbox = document.createElement('input')
-    checkbox.type = 'checkbox'
+    const checkbox = drawInput(wrIsPublished, 'checkbox')
     checkbox.checked = nodeData.isPublished
     checkbox.addEventListener('change', () => {
         nodeData.isPublished = checkbox.checked
     })
-    wrIsPublished.appendChild(checkbox);
-    createElem('label', wrIsPublished, 'isPublished')
+    drawElem('label', wrIsPublished, 'isPublished')
 
-    const previewText = document.createElement('input')
-    previewText.type = 'text'
-    previewText.placeholder = 'previewText'
-    previewText.value = nodeData.preview.text
-    previewText.addEventListener('change', () => {
-        nodeData.preview.text = previewText.value
+    drawInput(wrapper, 'text', nodeData.preview.text, 'previewText').addEventListener('change', e => {
+        nodeData.preview.text = e.target.value
     })
-    wrapper.appendChild(previewText)
     drawEmptyLine(wrapper)
 
     // preview image *************************************************/
@@ -358,9 +350,7 @@ const formsEditNode = async (nodeId = null) => {
         reader.readAsDataURL(file)
     })
     wrapper.appendChild(prImgInput)
-    const remove = document.createElement('button')
-    remove.innerText = '✖️'
-    remove.addEventListener('click', () => {
+    drawElem('button', wrapper, '✖️').addEventListener('click', () => {
         showImage.removeAttribute("src");
         if (nodeData.preview.imageCandidate) {
             nodeData.preview.imageCandidate.message = "mustDelete" 
@@ -368,7 +358,6 @@ const formsEditNode = async (nodeId = null) => {
             nodeData.preview.imageCandidate = { message: "mustDelete" }
         }
     })
-    wrapper.appendChild(remove)
     drawEmptyLine(wrapper)
 
 
@@ -377,66 +366,47 @@ const formsEditNode = async (nodeId = null) => {
     if (nodeData.tags) {
         tagsSet = new Set(nodeData.tags)
     }
-    const tagsWrapper = document.createElement('div')
-    wrapper.appendChild(tagsWrapper)
+    const tagsWrapper = drawElem('div', wrapper)
 
-    let tagsWr = null
+    let tagsInnerWr = null
     const addTagList = () => {
-        if (tagsWr) {
-            tagsWrapper.removeChild(tagsWr)
+        if (tagsInnerWr) {
+            tagsWrapper.removeChild(tagsInnerWr)
         }
-        tagsWr = document.createElement('div')
-        tagsWrapper.appendChild(tagsWr)
+        tagsInnerWr = drawElem('div', tagsWrapper)
 
         for (let value of tagsSet ) {
-            const t = document.createElement('div')
-            tagsWr.appendChild(t)
-            const v = document.createElement('span')
-            v.textContent = value
-            t.appendChild(v)
-            const remove = document.createElement('button')
-            remove.innerText = '✖️'
-            remove.addEventListener('click', () => {
+            const t = drawElem('div', tagsInnerWr)
+            drawElem('span', t, value)
+            drawElem('button', t, '✖️').addEventListener('click', () => {
+                t.innerText = ''
+                tagsInnerWr.removeChild(t)
                 tagsSet.delete(value)
-                t.removeChild(v)
-                t.removeChild(remove)
                 nodeData.tags = [...tagsSet ]
             })
-            t.appendChild(remove)
         }
     }
     addTagList()
     
     const addTagDropdown = () => {
-        const wr = document.createElement('div')
-        tagsWrapper.appendChild(wr)
+        const wr = drawElem('div', tagsWrapper)
 
         const select = document.createElement('select')
         select.id = Math.floor(Math.random() * 1000) + '_dynamicSelect'
         for (let i = 0; i < appData.tags.length; i++) {
-            const option = document.createElement('option')
+            const option = drawElem('option', select, appData.tags[i])
             option.value = appData.tags[i]
-            option.textContent = appData.tags[i]
-            select.appendChild(option)
         }
         wr.appendChild(select)
     
-        const appendTag = document.createElement('button')
-        appendTag.innerText = '✔️'
-        appendTag.addEventListener('click', () => {
+        drawElem('button', wr, '✔️').addEventListener('click', () => {
+            tagsWrapper.removeChild(wr)
             tagsSet.add(select.value)
             nodeData.tags = [...tagsSet]
-            wr.removeChild(select)
-            wr.removeChild(appendTag)
             addTagList()
         })
-        wr.appendChild(appendTag)
     }
-
-    const createButtAddTag = document.createElement('button')
-    createButtAddTag.innerText = '➕'
-    createButtAddTag.addEventListener('click', () => addTagDropdown())
-    wrapper.appendChild(createButtAddTag)
+    drawElem('button', wrapper, '➕').addEventListener('click', addTagDropdown)
     drawEmptyLine(wrapper)
 
 
@@ -539,47 +509,34 @@ const formsEditNode = async (nodeId = null) => {
         })
         wr.appendChild(txt)
         drawEmptyLine(wr, 1)
-
-        const remove = document.createElement('button')
-        remove.innerText = '✖️'
-        remove.addEventListener('click', () => {
+        drawElem('button', wr, '✖️').addEventListener('click', () => {
             orderContent.destroyElem(contentId)
-
             nodeData.content = nodeData.content.filter(item => item.contentId !== contentId)
         })
-        wr.appendChild(remove)
-        const moveTop = document.createElement('button')
-        moveTop.innerText = '🔼'
-        moveTop.addEventListener('click', () => {
+        drawElem('button', wr, '🔼').addEventListener('click', () => {
             orderContent.moveTop(contentId)
         })
-        wr.appendChild(moveTop)
-        const moveBottom = document.createElement('button')
-        moveBottom.innerText = '🔽'
-        moveBottom.addEventListener('click', () => {
+        drawElem('button', wr, '🔽').addEventListener('click', () => {
             orderContent.moveBottom(contentId)
         })
-        wr.appendChild(moveBottom)
         drawEmptyLine(wr, 10)
     }
 
     /** create content image **************************************/
     const createElementImage = (existContentElem = null) => {
-        const wr = document.createElement('div');
+        const wr = document.createElement('div')
         const contentId = existContentElem ? existContentElem.contentId : Math.floor(Math.random() * 1000) + '_contentId';
         orderContent.addElem({ contentId, dom: wr })
 
         const S = 50
-        const showImage = document.createElement('img')
+        const showImage = drawElem('img', wr)
         showImage.style.width = S + 'px'
         showImage.style.height = S + 'px'
         if (existContentElem && existContentElem.src) {
             showImage.src = existContentElem.src
         }
-        wr.appendChild(showImage);
       
-        // Create the file input (only accept images)
-        const imgInput = document.createElement('input');
+        const imgInput = document.createElement('input')
         imgInput.type = 'file';
         imgInput.accept = 'image/*';
         imgInput.addEventListener('change', () => {
@@ -614,9 +571,7 @@ const formsEditNode = async (nodeId = null) => {
         })
         wr.appendChild(imgInput)
         drawEmptyLine(wr, 1)
-        const remove = document.createElement('button')
-        remove.innerText = '✖️'
-        remove.addEventListener('click', async () => {
+        drawElem('button', wr, '✖️').addEventListener('click', async () => {
             const isOk = await drawAlert()
             if (!isOk) return;
             if (existContentElem) {
@@ -627,19 +582,12 @@ const formsEditNode = async (nodeId = null) => {
             wr.innerHTML = ''
             contentWrapper.removeChild(wr)
         })
-        wr.appendChild(remove)
-        const moveTop = document.createElement('button')
-        moveTop.innerText = '🔼'
-        moveTop.addEventListener('click', () => {
+        drawElem('button', wr, '🔼').addEventListener('click', () => {
             orderContent.moveTop(contentId)
         })
-        wr.appendChild(moveTop)
-        const moveBottom = document.createElement('button')
-        moveBottom.innerText = '🔽'
-        moveBottom.addEventListener('click', () => {
+        drawElem('button', wr, '🔽').addEventListener('click', () => {
             orderContent.moveBottom(contentId)
         })
-        wr.appendChild(moveBottom)
         drawEmptyLine(wr, 10)
     }
 
@@ -653,23 +601,12 @@ const formsEditNode = async (nodeId = null) => {
     }
 
     drawEmptyLine(wrapper)
-
-    const createButtAddText = document.createElement('button')
-    createButtAddText.innerText = 'add ✍️'
-    createButtAddText.addEventListener('click', () => createElementText())
-    wrapper.appendChild(createButtAddText)
-
-    const createContentImage = document.createElement('button')
-    createContentImage.innerText = 'add 🖼'
-    createContentImage.addEventListener('click', () => createElementImage())
-    wrapper.appendChild(createContentImage)
-
+    drawElem('button', wrapper, 'add ✍️').addEventListener('click', () => createElementText())
+    drawElem('button', wrapper, 'add 🖼').addEventListener('click', () => createElementImage())
     drawEmptyLine(wrapper)
 
     // save *******************************************************/
-    const save = document.createElement('button')
-    save.innerText = '✅✅✅✅✅✅'
-    save.addEventListener('click', async () => {
+    drawElem('button', wrapper, '✅✅✅✅✅✅').addEventListener('click', async () => {
         if (nodeData.preview.imageCandidate) {
             if (nodeData.preview.imageCandidate.message === "mustDelete") {
                 if (nodeData.preview.imgSrc) {
@@ -770,7 +707,6 @@ const formsEditNode = async (nodeId = null) => {
         document.querySelector('.edit-node').innerHTML = ''
         redirectToAndDrawPage('node', nodeData.id)
     })
-    wrapper.appendChild(save)
 }
 
 document.addEventListener('DOMContentLoaded', async () => { 
