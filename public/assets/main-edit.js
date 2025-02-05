@@ -51,7 +51,14 @@ const deleteFileFromServer = async (fileName) => {
     }
     return 'Delete successful'
 }
-
+const tryDeleteImageFromServerByPath = async (path) => {
+    const name = path.split('/').pop()
+    try {
+        await deleteFileFromServer(name)
+    } catch (error) {
+        console.log('error', error)
+    }
+} 
 const checkParamsUrl = () => {
     const queryString = window.location.search
     const urlParams = new URLSearchParams(queryString)
@@ -595,15 +602,6 @@ const formsEditNode = async (nodeId = null) => {
     drawEmptyLine(wrapper)
 
     // save *******************************************************/
-    const tryDeleteImageFromServerByPath = async (path) => {
-        const name = path.split('/').pop()
-        try {
-            await deleteFileFromServer(name)
-        } catch (error) {
-            console.log('error', error)
-        }
-    } 
-
     drawElem('button', wrapper, '✅✅✅✅✅✅').addEventListener('click', async () => {
         if (nodeData.preview.imageCandidate) {
             // if delete previewImage ////////////////////////////////////////
