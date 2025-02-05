@@ -141,9 +141,10 @@ const drawPreviewNode = async (nodeId, wrapper) => {
     if (!node.isPublished) {
        return;     
     }
-    const el = document.createElement('div')
-    el.classList.add('view-list-item')
-    wrapper.appendChild(el)
+    const el = createElem('div', wrapper, null, 'view-list-item')
+    el.addEventListener('click', () => {
+        redirectToAndDrawPage('node', nodeId)
+    })
     //const data = document.createElement('div')
     //data.classList.add('code')
     //data.innerHTML = JSON.stringify(node, null, 2) // node
@@ -162,9 +163,6 @@ const drawPreviewNode = async (nodeId, wrapper) => {
             drawText(node.content[1].html, el)
         }
     }
-    el.addEventListener('click', () => {
-        redirectToAndDrawPage('node', nodeId)
-    })
 }
 const drawNode = async (nodeId) => {
     const addNewNodeButton = document.querySelector('.add-new-node')
@@ -181,17 +179,11 @@ const drawNode = async (nodeId) => {
 
     const wrapper = document.querySelector('.content')
 
-    const edit = document.createElement('button')
-    edit.innerHTML = '✏️✏️✏️✏️✏️✏️✏️✏️'
-    wrapper.appendChild(edit)
-    edit.addEventListener('click', async () => {
-        wrapper.removeChild(edit)
+    createElem('button', wrapper, '✏️✏️✏️✏️✏️✏️✏️✏️').addEventListener('click', e => {
+        wrapper.removeChild(e.target)
         formsEditNode(nodeId)
     })
-    const del = document.createElement('button')
-    del.innerHTML = '❌❌❌❌❌❌❌❌❌'
-    wrapper.appendChild(del)
-    del.addEventListener('click', async () => {
+    createElem('button', wrapper, '🗑️🗑️🗑️🗑️🗑️🗑️🗑️').addEventListener('click', async e => {
         const isOk = await drawAlert()
         if (!isOk) {
             return;
@@ -211,10 +203,7 @@ const drawNode = async (nodeId) => {
         }
     }
 
-    const data = document.createElement('div')
-    data.classList.add('code')
-    data.innerHTML = JSON.stringify(node, null, 2) // node
-    wrapper.appendChild(data)
+    createElem('div', wrapper, JSON.stringify(node, null, 2), 'code')
 }
 /** list ********************************************************** */
 const drawList = async (listId) => {
@@ -285,14 +274,11 @@ const formsEditNode = async (nodeId = null) => {
     document.querySelector('.add-new-node').style.display = 'none'
     const wrapper = document.querySelector('.edit-node')
 
-    const close = document.createElement('button')
-    close.innerText = '↗️'
-    close.addEventListener('click', () => {
+    createElem('button', wrapper, '↗️').addEventListener('click', () => {
         nodeId 
             ? redirectToAndDrawPage('node', nodeId) 
             : redirectToAndDrawPage()
     })
-    wrapper.appendChild(close)
     drawEmptyLine(wrapper)
 
     const title = document.createElement('input')
@@ -314,6 +300,8 @@ const formsEditNode = async (nodeId = null) => {
     wrapper.appendChild(raiting)
 
     const wrIsPublished = document.createElement('div')
+    wrapper.appendChild(wrIsPublished)
+
     const checkbox = document.createElement('input')
     checkbox.type = 'checkbox'
     checkbox.checked = nodeData.isPublished
@@ -321,10 +309,7 @@ const formsEditNode = async (nodeId = null) => {
         nodeData.isPublished = checkbox.checked
     })
     wrIsPublished.appendChild(checkbox);
-    const label = document.createElement('label')
-    label.textContent = 'isPublished'
-    wrIsPublished.appendChild(label)
-    wrapper.appendChild(wrIsPublished)
+    createElem('label', wrIsPublished, 'isPublished')
 
     const previewText = document.createElement('input')
     previewText.type = 'text'
