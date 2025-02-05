@@ -468,6 +468,7 @@ const formsEditNode = async (nodeId = null) => {
             addTagList()
         })
     }
+    addTagDropdown()
     drawElem('button', wrapper, '➕').addEventListener('click', addTagDropdown)
     drawEmptyLine(wrapper)
 
@@ -597,8 +598,8 @@ const formsEditNode = async (nodeId = null) => {
     }
 
     drawEmptyLine(wrapper)
-    drawElem('button', wrapper, 'add ✍️').addEventListener('click', () => createElementText())
     drawElem('button', wrapper, 'add 🖼').addEventListener('click', () => createElementImage())
+    drawElem('button', wrapper, 'add ✍️').addEventListener('click', () => createElementText())
     drawEmptyLine(wrapper)
 
     // save *******************************************************/
