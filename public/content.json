@@ -35,27 +35,14 @@
       },
       "tags": [
         "design",
-        "code",
-        "art"
+        "code"
       ],
       "raiting": "105",
       "content": [
         {
-          "contentId": "915_contentId",
-          "type": "img",
-          "src": "./images/250205_162238_c.jpg",
-          "fileName": "250205_162238_c.jpg"
-        },
-        {
-          "contentId": "331_contentId",
+          "contentId": "840_contentId",
           "type": "text",
-          "html": "qqqqq"
-        },
-        {
-          "contentId": "726_contentId",
-          "type": "img",
-          "src": "./images/250205_161912_c.jpg",
-          "fileName": "250205_161912_c.jpg"
+          "html": "fgfgfgfg"
         },
         {
           "contentId": "824_contentId",
@@ -63,9 +50,10 @@
           "html": "vvvv"
         },
         {
-          "contentId": "840_contentId",
-          "type": "text",
-          "html": "fgfgfgfg"
+          "contentId": "584_contentId",
+          "type": "img",
+          "src": "./images/250205_174453_c.jpg",
+          "fileName": "250205_174453_c.jpg"
         }
       ]
     },

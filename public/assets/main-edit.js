@@ -11,7 +11,6 @@ const getFormattedDate = () => {
 
 /******** API  *******************************************************/
 
-const url = window.location.origin
 const loadJson = async () => {
     const response = await fetch('./content.json')
     if (!response.ok) {
@@ -21,7 +20,7 @@ const loadJson = async () => {
     return data
 }
 const postDataToServer = async (data) => {
-    const response = await fetch(url + '/api/updateAppData', {
+    const response = await fetch('./api/updateAppData', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ appData: data })
@@ -140,6 +139,67 @@ const drawText = (text, wrapper, size = 16) => {
     p.style.padding = '0 20px' 
     wrapper.appendChild(p)
 }
+
+/** order content get Wrapper and move content top buttom by id */
+const createOrderContent = (wrapper) => {
+    const elems = []
+    return { 
+        addElem: ({ contentId, dom }) => {
+            elems.push({ contentId, dom })
+            wrapper.appendChild(dom) 
+        },
+        destroyElem: (contentId) => {
+            let index = null
+            for (let i = 0; i < elems.length; ++i) {
+                if (elems[i].contentId !== contentId) continue;
+                index = i
+                break; 
+            }
+            if (index !== null)
+            elems[index].dom.innerHTML = ''
+            wrapper.removeChild(elems[index].dom)
+            elems.splice(index, 1)
+        },
+        moveTop: (contentId) => {
+            let prevIndex = null
+            let currentIndex = null
+            for (let i = 0; i < elems.length - 1; ++i) {
+                if (elems[i + 1].contentId !== contentId) continue;
+                prevIndex = i
+                currentIndex = i + 1
+                break;
+            }
+            if (currentIndex === null || prevIndex === null) return;
+            wrapper.insertBefore(elems[currentIndex].dom, elems[prevIndex].dom)
+            const saved = elems[prevIndex]
+            elems[prevIndex] = elems[currentIndex]
+            elems[currentIndex] = saved
+        },
+        moveBottom: (contentId) => {
+            let currentIndex = null
+            let nextIndex = null
+            for (let i = 0; i < elems.length - 1; ++i) {
+                if (elems[i].contentId !== contentId) continue;
+                currentIndex = i
+                nextIndex = i + 1
+                break;
+            }
+            if (currentIndex === null || nextIndex === null) return;
+            if (elems[nextIndex].dom.nextSibling) {
+              wrapper.insertBefore(elems[currentIndex].dom, elems[nextIndex].dom.nextSibling);
+            } else {
+              wrapper.appendChild(elems[currentIndex].dom);
+            }
+            const saved = elems[nextIndex]
+            elems[nextIndex] = elems[currentIndex]
+            elems[currentIndex] = saved
+        },
+        getOrder: () => {
+            return elems.map(e => e.contentId)
+        }
+    }
+}
+
 /** node ********************************** */
 const drawPreviewNode = async (nodeId, wrapper) => {    
     const node = appData.nodes.find(node => node.id === nodeId)
@@ -157,10 +217,6 @@ const drawPreviewNode = async (nodeId, wrapper) => {
        el.classList.add('red')    
     }
 
-    //const data = document.createElement('div')
-    //data.classList.add('code')
-    //data.innerHTML = JSON.stringify(node, null, 2) // node
-    //el.appendChild(data)
     const { imgSrc, text } = node.preview
     imgSrc && await drawImage(imgSrc, el) 
     text && drawText(text, el)
@@ -300,7 +356,6 @@ const formsEditNode = async (nodeId = null) => {
     })
 
     const wrIsPublished = drawElem('div', wrapper)
-
     const checkbox = drawInput(wrIsPublished, 'checkbox')
     checkbox.checked = nodeData.isPublished
     checkbox.addEventListener('change', () => {
@@ -411,69 +466,10 @@ const formsEditNode = async (nodeId = null) => {
 
 
     /** CONTENT ********************************************/ 
-    /** ****************************************************/ 
 
     // order content node for move bottom/top
     const contentWrapper = document.createElement('div')
     wrapper.appendChild(contentWrapper)
-    const createOrderContent = (wrapper) => {
-        const elems = []
-        return { 
-            addElem: ({ contentId, dom }) => {
-                elems.push({ contentId, dom })
-                wrapper.appendChild(dom) 
-            },
-            destroyElem: (contentId) => {
-                let index = null
-                for (let i = 0; i < elems.length; ++i) {
-                    if (elems[i].contentId !== contentId) continue;
-                    index = i
-                    break; 
-                }
-                if (index !== null)
-                elems[index].dom.innerHTML = ''
-                wrapper.removeChild(elems[index].dom)
-                elems.splice(index, 1)
-            },
-            moveTop: (contentId) => {
-                let prevIndex = null
-                let currentIndex = null
-                for (let i = 0; i < elems.length - 1; ++i) {
-                    if (elems[i + 1].contentId !== contentId) continue;
-                    prevIndex = i
-                    currentIndex = i + 1
-                    break;
-                }
-                if (currentIndex === null || prevIndex === null) return;
-                wrapper.insertBefore(elems[currentIndex].dom, elems[prevIndex].dom)
-                const saved = elems[prevIndex]
-                elems[prevIndex] = elems[currentIndex]
-                elems[currentIndex] = saved
-            },
-            moveBottom: (contentId) => {
-                let currentIndex = null
-                let nextIndex = null
-                for (let i = 0; i < elems.length - 1; ++i) {
-                    if (elems[i].contentId !== contentId) continue;
-                    currentIndex = i
-                    nextIndex = i + 1
-                    break;
-                }
-                if (currentIndex === null || nextIndex === null) return;
-                if (elems[nextIndex].dom.nextSibling) {
-                  wrapper.insertBefore(elems[currentIndex].dom, elems[nextIndex].dom.nextSibling);
-                } else {
-                  wrapper.appendChild(elems[currentIndex].dom);
-                }
-                const saved = elems[nextIndex]
-                elems[nextIndex] = elems[currentIndex]
-                elems[currentIndex] = saved
-            },
-            getOrder: () => {
-                return elems.map(e => e.contentId)
-            }
-        }
-    }
     const orderContent = createOrderContent(contentWrapper)
 
     // create text **********************************************/
@@ -482,18 +478,14 @@ const formsEditNode = async (nodeId = null) => {
         const contentId = data ? data.contentId : Math.floor(Math.random() * 1000) + '_contentId'
         orderContent.addElem({ contentId, dom: wr })
         
-        const txt = document.createElement('input')
-        txt.type = 'text'
-        txt.placeholder = 'content text'
-        txt.value = data ? data.html : ''
-        txt.addEventListener('change', () => {
+        drawInput(wr, 'text', data ? data.html : '', 'content text').addEventListener('change', e => {
             let current = null
             for (let i = 0; i < nodeData.content.length; i++) {
                 if (nodeData.content[i].contentId === contentId) {
                     current = nodeData.content[i]
                 }
             }
-            const newDataCandidate = { contentId, type: 'text', html: txt.value }
+            const newDataCandidate = { contentId, type: 'text', html: e.target.value }
             if (current) {
                 current.newDataCandidate = newDataCandidate
             } else {
@@ -502,12 +494,11 @@ const formsEditNode = async (nodeId = null) => {
                     newDataCandidate: { 
                         contentId, 
                         type: 'text', 
-                        html: txt.value 
+                        html: e.target.value 
                     } 
                 })
             }
         })
-        wr.appendChild(txt)
         drawEmptyLine(wr, 1)
         drawElem('button', wr, '✖️').addEventListener('click', () => {
             orderContent.destroyElem(contentId)
@@ -536,11 +527,10 @@ const formsEditNode = async (nodeId = null) => {
             showImage.src = existContentElem.src
         }
       
-        const imgInput = document.createElement('input')
-        imgInput.type = 'file';
+        const imgInput = drawInput(wr, 'file')
         imgInput.accept = 'image/*';
-        imgInput.addEventListener('change', () => {
-            const file = imgInput.files[0]
+        imgInput.addEventListener('change', e => {
+            const file = e.target.files[0]
             if (!file) return;
             const reader = new FileReader()
             reader.addEventListener('load', (e) => {
@@ -569,7 +559,6 @@ const formsEditNode = async (nodeId = null) => {
                 }) 
             }    
         })
-        wr.appendChild(imgInput)
         drawEmptyLine(wr, 1)
         drawElem('button', wr, '✖️').addEventListener('click', async () => {
             const isOk = await drawAlert()
@@ -606,32 +595,29 @@ const formsEditNode = async (nodeId = null) => {
     drawEmptyLine(wrapper)
 
     // save *******************************************************/
+    const tryDeleteImageFromServerByPath = async (path) => {
+        const name = path.split('/').pop()
+        try {
+            await deleteFileFromServer(name)
+        } catch (error) {
+            console.log('error', error)
+        }
+    } 
+
     drawElem('button', wrapper, '✅✅✅✅✅✅').addEventListener('click', async () => {
         if (nodeData.preview.imageCandidate) {
+            // if delete previewImage ////////////////////////////////////////
             if (nodeData.preview.imageCandidate.message === "mustDelete") {
                 if (nodeData.preview.imgSrc) {
-                    const name = nodeData.preview.imgSrc.split('/').pop()
-                    try {
-                        const result = await deleteFileFromServer(name)
-                    } catch (error) {
-                        console.log('error', error)
-                    }
+                    await tryDeleteImageFromServerByPath(nodeData.preview.imgSrc)
                 }
                 delete nodeData.preview.imgSrc
                 delete nodeData.preview.imageCandidate
             }
-
-            if (
-                nodeData.preview.imageCandidate && 
-                nodeData.preview.imageCandidate.canvasPreview
-            ) {
+            // if change previewImage to another /////////////////////////////
+            if (nodeData.preview.imageCandidate && nodeData.preview.imageCandidate.canvasPreview) {
                 if (nodeData.preview.imgSrc) {
-                    const name = nodeData.preview.imgSrc.split('/').pop()
-                    try {
-                        const result = await deleteFileFromServer(name)
-                    } catch (error) {
-                        console.log('error', error)
-                    }
+                    await tryDeleteImageFromServerByPath(nodeData.preview.imgSrc)
                 }
 
                 const convertImg = (canvas) => {
@@ -650,6 +636,7 @@ const formsEditNode = async (nodeId = null) => {
                 }
             }
         }
+        // change node content ////////////////////////////////
         for (let i = 0; i < nodeData.content.length; i++) {
             const contentItem = nodeData.content[i]
             if (!contentItem.newDataCandidate) {
@@ -661,14 +648,9 @@ const formsEditNode = async (nodeId = null) => {
 
             if (contentItem.newDataCandidate.type === 'img') { 
                 if (contentItem.src) {
-                    const name = contentItem.src.split('/').pop()
-                    try {
-                        const result = await deleteFileFromServer(name)
-                    } catch (error) {
-                        console.log('error', error)
-                    }
+                    await tryDeleteImageFromServerByPath(contentItem.src)
                 }
-                const { contentId, formData, fileName, message } = contentItem.newDataCandidate
+                const { formData, message } = contentItem.newDataCandidate
                 if (message === 'mustDelete') {
                     nodeData.content.splice(i, 1)
                     --i
