@@ -1,7 +1,7 @@
 (() => {
   /*********** Глобальные переменные и состояния *****************************/
-  
-  const OFFSET_W = 50
+  const NUM_NODES_IN_LIST = 20
+  const OFFSET_W = 5
   let w, h, minKey
   let appData = null
   const contentWrapper = document.querySelector('.content')
@@ -35,6 +35,7 @@
     return {
       nodeId: urlParams.get('node') || null,
       listId: urlParams.get('list') || null,
+      page: urlParams.get('page') || null,
     }
   }
 
@@ -125,20 +126,45 @@
     }
   }
 
-  const drawList = async (listId) => {
+  const drawPager = (wrapper, countItems, index, numPerPage, tag) => {
+    const n = Math.ceil(countItems / numPerPage)
+    if (n < 2) return;
+
+    drawEmptyLine(wrapper, 40)
+    const wr = document.createElement('div')
+    wr.classList.add('pager')
+    wrapper.appendChild(wr)
+    for (let i = 0; i < n; ++i) {
+      const a = document.createElement('a')
+      a.innerText = +index === i ? '[' + i + ']' : i + ''
+      wr.appendChild(a)
+      +index !== i && a.addEventListener('click', () => {
+        redirectToAndDrawPage('list', tag, i)
+      })
+    }
+  }
+
+  const drawList = async (listId, pageNum = 0) => {
     const nodes = appData.nodes
-        .filter((n) => n.tags?.includes(listId))
-        .sort((a, b) => b.raiting - a.raiting)
+      .filter((n) => n.tags?.includes(listId))
+      .sort((a, b) => b.raiting - a.raiting)
+
+      
+    const startIndex = pageNum * NUM_NODES_IN_LIST
+    const endIndex = startIndex + NUM_NODES_IN_LIST
 
     if (listId === 'code' || listId === 'design') {
-        const viewList = document.createElement('div')
-        viewList.classList.add('view-list')
-        contentWrapper.appendChild(viewList)
-        for (const node of nodes) {
-          await drawPreviewNode(node.id, viewList)
-        }
+      const viewList = document.createElement('div')
+      viewList.classList.add('view-list')
+      contentWrapper.appendChild(viewList)
+      for (let i = startIndex; i < endIndex; ++i) { 
+        if (!nodes[i]) break;
+        await drawPreviewNode(nodes[i].id, viewList)
+      }
     } else {
-      for (const node of nodes) {
+      for (let i = startIndex; i < endIndex; ++i) {
+        if (!nodes[i]) break;
+        const node = nodes[i]
         let isImg = false
         let isText = false
         if (node.content[0] && node.content[0].type === 'img') {
@@ -149,33 +175,30 @@
           drawText(node.content[1].html, contentWrapper)
           isText = true
         }
-        if (isImg || isText) drawEmptyLine(contentWrapper, 60)
       }
-    }   
+    }
+    drawPager(contentWrapper, nodes.length, pageNum, NUM_NODES_IN_LIST, listId)
   }
 
   const redrawMainMenu = (listId) => {
     const links = document.querySelectorAll('.nav-item')
     links.forEach((link) => {
-        link.id === listId 
-            ? link.classList.add('current') 
-            : link.classList.remove('current')
+      link.id === listId 
+        ? link.classList.add('current') 
+        : link.classList.remove('current')
     })
   }
 
-  const redirectToAndDrawPage = async (type, id) => {
+  const redirectToAndDrawPage = async (type = 'list', id = 'code', pageNum = 0) => {
     clearContent()
-    if (type && id) {
-      window.history.pushState({ type, id }, '', `?${type}=${id}`)
-    }
-    if (!type) redrawMainMenu('code')
-    // Парсим текущий URL и рисуем нужный контент
-    const { nodeId, listId } = parseUrlParams()
+    window.history.pushState({ type, id, page: pageNum }, '', `?${type}=${id}&page=${pageNum}`)
+    const { nodeId, listId, page } = parseUrlParams()
     if (nodeId) {
         await drawNode(nodeId)
-    } else if (listId) {
+    }
+    if (listId) {
         redrawMainMenu(listId)
-        await drawList(listId)
+        await drawList(listId, page)
     }
   }
 
@@ -189,7 +212,7 @@
     const links = document.querySelectorAll('.nav-item')
     links.forEach((link) => {
       link.addEventListener('click', () => {
-        redirectToAndDrawPage('list', link.id)
+        redirectToAndDrawPage('list', link.id, 0)
       })
     })
 

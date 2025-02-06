@@ -55,14 +55,14 @@
             margin: 10px;
         }
         .view-list {
-            display: flex;            /* Включаем флексбокс */
-            flex-wrap: wrap;          /* Перенос строк при нехватке места */
-            gap: 30px;                /* Расстояние между элементами */
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
             max-width: 1000px;
             margin: 0 auto;
         }
         .view-list-item {
-            flex: 1 1 calc(33.333% - 30px); /* По умолчанию 3 карточки в ряд */
+            flex: 1 1 calc(33.333% - 30px);
             box-sizing: border-box;
             text-align: center;
             padding: 10px;
@@ -78,13 +78,21 @@
           border: 3px solid rgb(146, 0, 0);
           cursor: pointer;
         }
+        .pager {
+          display: flex;
+          flex-direction: row;
+          gap: 15px;
+          justify-content: center;
+          font-size: 22px;
+          color: rgb(146, 0, 0);
+          font-weight: bold;
+          cursor: pointer;
+        }
         @media screen and (max-width: 768px) {
           .view-list-item {
               flex: 1 1 calc(50% - 16px);
           }
         }
-
-        /* 1 карточка в ряд, если ширина экрана меньше 480px */
         @media screen and (max-width: 480px) {
           .view-list-item {
               flex: 1 1 100%;
