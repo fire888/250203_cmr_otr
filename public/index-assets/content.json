@@ -16,44 +16,13 @@
         {
           "contentId": "402_contentId",
           "type": "img",
-          "src": "./images/250205_235825_c.jpg",
+          "src": "./index-assets/images/250205_235825_c.jpg",
           "fileName": "250205_235825_c.jpg"
         },
         {
           "contentId": "68_contentId",
           "type": "text",
           "html": "Фонтан"
-        }
-      ]
-    },
-    {
-      "id": "756360_",
-      "title": "17:03 aaa ff",
-      "isPublished": false,
-      "preview": {
-        "text": "previewtext - 111"
-      },
-      "tags": [
-        "design",
-        "code"
-      ],
-      "raiting": "105",
-      "content": [
-        {
-          "contentId": "840_contentId",
-          "type": "text",
-          "html": "fgfgfgfg"
-        },
-        {
-          "contentId": "824_contentId",
-          "type": "text",
-          "html": "vvvv"
-        },
-        {
-          "contentId": "584_contentId",
-          "type": "img",
-          "src": "./images/250205_174453_c.jpg",
-          "fileName": "250205_174453_c.jpg"
         }
       ]
     },
@@ -73,7 +42,7 @@
         {
           "contentId": "225_contentId",
           "type": "img",
-          "src": "./images/250205_235744_c.jpg",
+          "src": "./index-assets/images/250205_235744_c.jpg",
           "fileName": "250205_235744_c.jpg"
         },
         {
@@ -99,7 +68,7 @@
         {
           "contentId": "429_contentId",
           "type": "img",
-          "src": "./images/250205_235719_c.jpg",
+          "src": "./index-assets/images/250205_235719_c.jpg",
           "fileName": "250205_235719_c.jpg"
         },
         {
@@ -125,7 +94,7 @@
         {
           "contentId": "795_contentId",
           "type": "img",
-          "src": "./images/250205_235654_c.jpg",
+          "src": "./index-assets/images/250205_235654_c.jpg",
           "fileName": "250205_235654_c.jpg"
         },
         {
@@ -151,7 +120,7 @@
         {
           "contentId": "592_contentId",
           "type": "img",
-          "src": "./images/250205_235633_c.jpg",
+          "src": "./index-assets/images/250205_235633_c.jpg",
           "fileName": "250205_235633_c.jpg"
         },
         {
@@ -177,7 +146,7 @@
         {
           "contentId": "404_contentId",
           "type": "img",
-          "src": "./images/250205_235608_c.jpg",
+          "src": "./index-assets/images/250205_235608_c.jpg",
           "fileName": "250205_235608_c.jpg"
         },
         {
@@ -203,7 +172,7 @@
         {
           "contentId": "365_contentId",
           "type": "img",
-          "src": "./images/250205_235539_c.jpg",
+          "src": "./index-assets/images/250205_235539_c.jpg",
           "fileName": "250205_235539_c.jpg"
         },
         {
@@ -229,7 +198,7 @@
         {
           "contentId": "82_contentId",
           "type": "img",
-          "src": "./images/250205_235510_c.jpg",
+          "src": "./index-assets/images/250205_235510_c.jpg",
           "fileName": "250205_235510_c.jpg"
         },
         {
@@ -255,7 +224,7 @@
         {
           "contentId": "105_contentId",
           "type": "img",
-          "src": "./images/250205_235450_c.jpg",
+          "src": "./index-assets/images/250205_235450_c.jpg",
           "fileName": "250205_235450_c.jpg"
         },
         {
@@ -281,7 +250,7 @@
         {
           "contentId": "357_contentId",
           "type": "img",
-          "src": "./images/250205_235421_c.jpg",
+          "src": "./index-assets/images/250205_235421_c.jpg",
           "fileName": "250205_235421_c.jpg"
         },
         {
@@ -307,7 +276,7 @@
         {
           "contentId": "862_contentId",
           "type": "img",
-          "src": "./images/250205_235350_c.jpg",
+          "src": "./index-assets/images/250205_235350_c.jpg",
           "fileName": "250205_235350_c.jpg"
         },
         {
@@ -333,7 +302,7 @@
         {
           "contentId": "457_contentId",
           "type": "img",
-          "src": "./images/250205_235257_c.jpg",
+          "src": "./index-assets/images/250205_235257_c.jpg",
           "fileName": "250205_235257_c.jpg"
         },
         {
@@ -359,7 +328,7 @@
         {
           "contentId": "903_contentId",
           "type": "img",
-          "src": "./images/250205_235227_c.jpg",
+          "src": "./index-assets/images/250205_235227_c.jpg",
           "fileName": "250205_235227_c.jpg"
         },
         {
@@ -385,7 +354,7 @@
         {
           "contentId": "248_contentId",
           "type": "img",
-          "src": "./images/250205_235155_c.jpg",
+          "src": "./index-assets/images/250205_235155_c.jpg",
           "fileName": "250205_235155_c.jpg"
         },
         {
@@ -411,7 +380,7 @@
         {
           "contentId": "205_contentId",
           "type": "img",
-          "src": "./images/250205_235131_c.jpg",
+          "src": "./index-assets/images/250205_235131_c.jpg",
           "fileName": "250205_235131_c.jpg"
         },
         {
@@ -437,7 +406,7 @@
         {
           "contentId": "266_contentId",
           "type": "img",
-          "src": "./images/250205_235107_c.jpg",
+          "src": "./index-assets/images/250205_235107_c.jpg",
           "fileName": "250205_235107_c.jpg"
         },
         {
@@ -463,7 +432,7 @@
         {
           "contentId": "764_contentId",
           "type": "img",
-          "src": "./images/250205_235050_c.jpg",
+          "src": "./index-assets/images/250205_235050_c.jpg",
           "fileName": "250205_235050_c.jpg"
         },
         {
@@ -489,7 +458,7 @@
         {
           "contentId": "914_contentId",
           "type": "img",
-          "src": "./images/250205_235025_c.jpg",
+          "src": "./index-assets/images/250205_235025_c.jpg",
           "fileName": "250205_235025_c.jpg"
         },
         {
@@ -515,7 +484,7 @@
         {
           "contentId": "269_contentId",
           "type": "img",
-          "src": "./images/250205_234956_c.jpg",
+          "src": "./index-assets/images/250205_234956_c.jpg",
           "fileName": "250205_234956_c.jpg"
         },
         {
@@ -541,7 +510,7 @@
         {
           "contentId": "700_contentId",
           "type": "img",
-          "src": "./images/250205_234932_c.jpg",
+          "src": "./index-assets/images/250205_234932_c.jpg",
           "fileName": "250205_234932_c.jpg"
         },
         {
@@ -567,7 +536,7 @@
         {
           "contentId": "941_contentId",
           "type": "img",
-          "src": "./images/250205_234856_c.jpg",
+          "src": "./index-assets/images/250205_234856_c.jpg",
           "fileName": "250205_234856_c.jpg"
         },
         {
@@ -593,7 +562,7 @@
         {
           "contentId": "827_contentId",
           "type": "img",
-          "src": "./images/250205_234825_c.jpg",
+          "src": "./index-assets/images/250205_234825_c.jpg",
           "fileName": "250205_234825_c.jpg"
         },
         {
@@ -619,7 +588,7 @@
         {
           "contentId": "489_contentId",
           "type": "img",
-          "src": "./images/250205_234739_c.jpg",
+          "src": "./index-assets/images/250205_234739_c.jpg",
           "fileName": "250205_234739_c.jpg"
         },
         {
@@ -645,7 +614,7 @@
         {
           "contentId": "746_contentId",
           "type": "img",
-          "src": "./images/250205_234715_c.jpg",
+          "src": "./index-assets/images/250205_234715_c.jpg",
           "fileName": "250205_234715_c.jpg"
         },
         {
@@ -671,7 +640,7 @@
         {
           "contentId": "743_contentId",
           "type": "img",
-          "src": "./images/250205_234627_c.jpg",
+          "src": "./index-assets/images/250205_234627_c.jpg",
           "fileName": "250205_234627_c.jpg"
         },
         {
@@ -697,7 +666,7 @@
         {
           "contentId": "969_contentId",
           "type": "img",
-          "src": "./images/250205_234556_c.jpg",
+          "src": "./index-assets/images/250205_234556_c.jpg",
           "fileName": "250205_234556_c.jpg"
         },
         {
@@ -723,7 +692,7 @@
         {
           "contentId": "870_contentId",
           "type": "img",
-          "src": "./images/250205_234530_c.jpg",
+          "src": "./index-assets/images/250205_234530_c.jpg",
           "fileName": "250205_234530_c.jpg"
         },
         {
@@ -749,7 +718,7 @@
         {
           "contentId": "277_contentId",
           "type": "img",
-          "src": "./images/250205_234502_c.jpg",
+          "src": "./index-assets/images/250205_234502_c.jpg",
           "fileName": "250205_234502_c.jpg"
         },
         {
@@ -775,7 +744,7 @@
         {
           "contentId": "899_contentId",
           "type": "img",
-          "src": "./images/250205_233832_c.jpg",
+          "src": "./index-assets/images/250205_233832_c.jpg",
           "fileName": "250205_233832_c.jpg"
         },
         {
@@ -801,7 +770,7 @@
         {
           "contentId": "415_contentId",
           "type": "img",
-          "src": "./images/250205_233802_c.jpg",
+          "src": "./index-assets/images/250205_233802_c.jpg",
           "fileName": "250205_233802_c.jpg"
         },
         {
@@ -827,7 +796,7 @@
         {
           "contentId": "691_contentId",
           "type": "img",
-          "src": "./images/250205_233715_c.jpg",
+          "src": "./index-assets/images/250205_233715_c.jpg",
           "fileName": "250205_233715_c.jpg"
         },
         {
@@ -853,7 +822,7 @@
         {
           "contentId": "420_contentId",
           "type": "img",
-          "src": "./images/250205_233348_c.jpg",
+          "src": "./index-assets/images/250205_233348_c.jpg",
           "fileName": "250205_233348_c.jpg"
         },
         {
@@ -879,7 +848,7 @@
         {
           "contentId": "137_contentId",
           "type": "img",
-          "src": "./images/250205_233320_c.jpg",
+          "src": "./index-assets/images/250205_233320_c.jpg",
           "fileName": "250205_233320_c.jpg"
         },
         {
@@ -905,7 +874,7 @@
         {
           "contentId": "564_contentId",
           "type": "img",
-          "src": "./images/250205_233116_c.jpg",
+          "src": "./index-assets/images/250205_233116_c.jpg",
           "fileName": "250205_233116_c.jpg"
         },
         {
@@ -931,7 +900,7 @@
         {
           "contentId": "467_contentId",
           "type": "img",
-          "src": "./images/250205_233034_c.jpg",
+          "src": "./index-assets/images/250205_233034_c.jpg",
           "fileName": "250205_233034_c.jpg"
         },
         {
@@ -957,7 +926,7 @@
         {
           "contentId": "247_contentId",
           "type": "img",
-          "src": "./images/250205_232707_c.jpg",
+          "src": "./index-assets/images/250205_232707_c.jpg",
           "fileName": "250205_232707_c.jpg"
         },
         {
@@ -983,7 +952,7 @@
         {
           "contentId": "954_contentId",
           "type": "img",
-          "src": "./images/250205_232647_c.jpg",
+          "src": "./index-assets/images/250205_232647_c.jpg",
           "fileName": "250205_232647_c.jpg"
         },
         {
@@ -1009,7 +978,7 @@
         {
           "contentId": "64_contentId",
           "type": "img",
-          "src": "./images/250205_232558_c.jpg",
+          "src": "./index-assets/images/250205_232558_c.jpg",
           "fileName": "250205_232558_c.jpg"
         },
         {
@@ -1035,7 +1004,7 @@
         {
           "contentId": "680_contentId",
           "type": "img",
-          "src": "./images/250205_232537_c.jpg",
+          "src": "./index-assets/images/250205_232537_c.jpg",
           "fileName": "250205_232537_c.jpg"
         },
         {
@@ -1061,7 +1030,7 @@
         {
           "contentId": "629_contentId",
           "type": "img",
-          "src": "./images/250205_232434_c.jpg",
+          "src": "./index-assets/images/250205_232434_c.jpg",
           "fileName": "250205_232434_c.jpg"
         },
         {
@@ -1087,7 +1056,7 @@
         {
           "contentId": "197_contentId",
           "type": "img",
-          "src": "./images/250205_232253_c.jpg",
+          "src": "./index-assets/images/250205_232253_c.jpg",
           "fileName": "250205_232253_c.jpg"
         },
         {
@@ -1113,7 +1082,7 @@
         {
           "contentId": "839_contentId",
           "type": "img",
-          "src": "./images/250205_232229_c.jpg",
+          "src": "./index-assets/images/250205_232229_c.jpg",
           "fileName": "250205_232229_c.jpg"
         },
         {
@@ -1139,7 +1108,7 @@
         {
           "contentId": "716_contentId",
           "type": "img",
-          "src": "./images/250205_232146_c.jpg",
+          "src": "./index-assets/images/250205_232146_c.jpg",
           "fileName": "250205_232146_c.jpg"
         },
         {
@@ -1165,7 +1134,7 @@
         {
           "contentId": "19_contentId",
           "type": "img",
-          "src": "./images/250205_231944_c.jpg",
+          "src": "./index-assets/images/250205_231944_c.jpg",
           "fileName": "250205_231944_c.jpg"
         },
         {
@@ -1191,7 +1160,7 @@
         {
           "contentId": "894_contentId",
           "type": "img",
-          "src": "./images/250205_231830_c.jpg",
+          "src": "./index-assets/images/250205_231830_c.jpg",
           "fileName": "250205_231830_c.jpg"
         },
         {
@@ -1217,7 +1186,7 @@
         {
           "contentId": "518_contentId",
           "type": "img",
-          "src": "./images/250205_231807_c.jpg",
+          "src": "./index-assets/images/250205_231807_c.jpg",
           "fileName": "250205_231807_c.jpg"
         },
         {
@@ -1243,7 +1212,7 @@
         {
           "contentId": "380_contentId",
           "type": "img",
-          "src": "./images/250205_231733_c.jpg",
+          "src": "./index-assets/images/250205_231733_c.jpg",
           "fileName": "250205_231733_c.jpg"
         },
         {
@@ -1269,7 +1238,7 @@
         {
           "contentId": "691_contentId",
           "type": "img",
-          "src": "./images/250205_231523_c.jpg",
+          "src": "./index-assets/images/250205_231523_c.jpg",
           "fileName": "250205_231523_c.jpg"
         },
         {
@@ -1295,7 +1264,7 @@
         {
           "contentId": "117_contentId",
           "type": "img",
-          "src": "./images/250205_231448_c.jpg",
+          "src": "./index-assets/images/250205_231448_c.jpg",
           "fileName": "250205_231448_c.jpg"
         },
         {
@@ -1321,7 +1290,7 @@
         {
           "contentId": "597_contentId",
           "type": "img",
-          "src": "./images/250205_231424_c.jpg",
+          "src": "./index-assets/images/250205_231424_c.jpg",
           "fileName": "250205_231424_c.jpg"
         },
         {
@@ -1347,7 +1316,7 @@
         {
           "contentId": "2_contentId",
           "type": "img",
-          "src": "./images/250205_231355_c.jpg",
+          "src": "./index-assets/images/250205_231355_c.jpg",
           "fileName": "250205_231355_c.jpg"
         },
         {
@@ -1373,7 +1342,7 @@
         {
           "contentId": "377_contentId",
           "type": "img",
-          "src": "./images/250205_231317_c.jpg",
+          "src": "./index-assets/images/250205_231317_c.jpg",
           "fileName": "250205_231317_c.jpg"
         },
         {
@@ -1399,7 +1368,7 @@
         {
           "contentId": "735_contentId",
           "type": "img",
-          "src": "./images/250205_231147_c.jpg",
+          "src": "./index-assets/images/250205_231147_c.jpg",
           "fileName": "250205_231147_c.jpg"
         },
         {
@@ -1425,7 +1394,7 @@
         {
           "contentId": "164_contentId",
           "type": "img",
-          "src": "./images/250205_231028_c.jpg",
+          "src": "./index-assets/images/250205_231028_c.jpg",
           "fileName": "250205_231028_c.jpg"
         },
         {
@@ -1451,7 +1420,7 @@
         {
           "contentId": "666_contentId",
           "type": "img",
-          "src": "./images/250205_231003_c.jpg",
+          "src": "./index-assets/images/250205_231003_c.jpg",
           "fileName": "250205_231003_c.jpg"
         },
         {
@@ -1477,7 +1446,7 @@
         {
           "contentId": "924_contentId",
           "type": "img",
-          "src": "./images/250205_230901_c.jpg",
+          "src": "./index-assets/images/250205_230901_c.jpg",
           "fileName": "250205_230901_c.jpg"
         },
         {
@@ -1503,7 +1472,7 @@
         {
           "contentId": "619_contentId",
           "type": "img",
-          "src": "./images/250205_230636_c.jpg",
+          "src": "./index-assets/images/250205_230636_c.jpg",
           "fileName": "250205_230636_c.jpg"
         },
         {
@@ -1529,7 +1498,7 @@
         {
           "contentId": "548_contentId",
           "type": "img",
-          "src": "./images/250205_230610_c.jpg",
+          "src": "./index-assets/images/250205_230610_c.jpg",
           "fileName": "250205_230610_c.jpg"
         },
         {
@@ -1555,7 +1524,7 @@
         {
           "contentId": "504_contentId",
           "type": "img",
-          "src": "./images/250205_230517_c.jpg",
+          "src": "./index-assets/images/250205_230517_c.jpg",
           "fileName": "250205_230517_c.jpg"
         },
         {
@@ -1581,7 +1550,7 @@
         {
           "contentId": "53_contentId",
           "type": "img",
-          "src": "./images/250205_230419_c.jpg",
+          "src": "./index-assets/images/250205_230419_c.jpg",
           "fileName": "250205_230419_c.jpg"
         },
         {
@@ -1607,7 +1576,7 @@
         {
           "contentId": "758_contentId",
           "type": "img",
-          "src": "./images/250205_230340_c.jpg",
+          "src": "./index-assets/images/250205_230340_c.jpg",
           "fileName": "250205_230340_c.jpg"
         },
         {
@@ -1633,7 +1602,7 @@
         {
           "contentId": "417_contentId",
           "type": "img",
-          "src": "./images/250205_230307_c.jpg",
+          "src": "./index-assets/images/250205_230307_c.jpg",
           "fileName": "250205_230307_c.jpg"
         },
         {
@@ -1659,7 +1628,7 @@
         {
           "contentId": "411_contentId",
           "type": "img",
-          "src": "./images/250205_230234_c.jpg",
+          "src": "./index-assets/images/250205_230234_c.jpg",
           "fileName": "250205_230234_c.jpg"
         },
         {
@@ -1685,7 +1654,7 @@
         {
           "contentId": "160_contentId",
           "type": "img",
-          "src": "./images/250205_230153_c.jpg",
+          "src": "./index-assets/images/250205_230153_c.jpg",
           "fileName": "250205_230153_c.jpg"
         },
         {
@@ -1711,7 +1680,7 @@
         {
           "contentId": "438_contentId",
           "type": "img",
-          "src": "./images/250205_230116_c.jpg",
+          "src": "./index-assets/images/250205_230116_c.jpg",
           "fileName": "250205_230116_c.jpg"
         },
         {
@@ -1737,7 +1706,7 @@
         {
           "contentId": "657_contentId",
           "type": "img",
-          "src": "./images/250205_230049_c.jpg",
+          "src": "./index-assets/images/250205_230049_c.jpg",
           "fileName": "250205_230049_c.jpg"
         },
         {
@@ -1763,7 +1732,7 @@
         {
           "contentId": "700_contentId",
           "type": "img",
-          "src": "./images/250205_230010_c.jpg",
+          "src": "./index-assets/images/250205_230010_c.jpg",
           "fileName": "250205_230010_c.jpg"
         },
         {
@@ -1789,7 +1758,7 @@
         {
           "contentId": "488_contentId",
           "type": "img",
-          "src": "./images/250205_225937_c.jpg",
+          "src": "./index-assets/images/250205_225937_c.jpg",
           "fileName": "250205_225937_c.jpg"
         },
         {
@@ -1815,7 +1784,7 @@
         {
           "contentId": "177_contentId",
           "type": "img",
-          "src": "./images/250205_225903_c.jpg",
+          "src": "./index-assets/images/250205_225903_c.jpg",
           "fileName": "250205_225903_c.jpg"
         },
         {
@@ -1841,7 +1810,7 @@
         {
           "contentId": "282_contentId",
           "type": "img",
-          "src": "./images/250205_225832_c.jpg",
+          "src": "./index-assets/images/250205_225832_c.jpg",
           "fileName": "250205_225832_c.jpg"
         },
         {
@@ -1867,7 +1836,7 @@
         {
           "contentId": "235_contentId",
           "type": "img",
-          "src": "./images/250205_225723_c.jpg",
+          "src": "./index-assets/images/250205_225723_c.jpg",
           "fileName": "250205_225723_c.jpg"
         },
         {
@@ -1893,7 +1862,7 @@
         {
           "contentId": "353_contentId",
           "type": "img",
-          "src": "./images/250205_225648_c.jpg",
+          "src": "./index-assets/images/250205_225648_c.jpg",
           "fileName": "250205_225648_c.jpg"
         },
         {
@@ -1919,7 +1888,7 @@
         {
           "contentId": "894_contentId",
           "type": "img",
-          "src": "./images/250205_225607_c.jpg",
+          "src": "./index-assets/images/250205_225607_c.jpg",
           "fileName": "250205_225607_c.jpg"
         },
         {
@@ -1945,7 +1914,7 @@
         {
           "contentId": "365_contentId",
           "type": "img",
-          "src": "./images/250205_225528_c.jpg",
+          "src": "./index-assets/images/250205_225528_c.jpg",
           "fileName": "250205_225528_c.jpg"
         },
         {
@@ -1971,7 +1940,7 @@
         {
           "contentId": "117_contentId",
           "type": "img",
-          "src": "./images/250205_225451_c.jpg",
+          "src": "./index-assets/images/250205_225451_c.jpg",
           "fileName": "250205_225451_c.jpg"
         },
         {
@@ -1997,7 +1966,7 @@
         {
           "contentId": "972_contentId",
           "type": "img",
-          "src": "./images/250205_180626_c.jpg",
+          "src": "./index-assets/images/250205_180626_c.jpg",
           "fileName": "250205_180626_c.jpg"
         },
         {
@@ -2022,7 +1991,7 @@
         {
           "contentId": "948_contentId",
           "type": "img",
-          "src": "./images/250205_000416_c.jpg",
+          "src": "./index-assets/images/250205_000416_c.jpg",
           "fileName": "250205_000416_c.jpg"
         },
         {
@@ -2048,7 +2017,7 @@
         {
           "contentId": "605_contentId",
           "type": "img",
-          "src": "./images/250205_000636_c.jpg",
+          "src": "./index-assets/images/250205_000636_c.jpg",
           "fileName": "250205_000636_c.jpg"
         },
         {
@@ -2074,7 +2043,7 @@
         {
           "contentId": "551_contentId",
           "type": "img",
-          "src": "./images/250205_180554_c.jpg",
+          "src": "./index-assets/images/250205_180554_c.jpg",
           "fileName": "250205_180554_c.jpg"
         },
         {
@@ -2100,7 +2069,7 @@
         {
           "contentId": "393_contentId",
           "type": "img",
-          "src": "./images/250205_180517_c.jpg",
+          "src": "./index-assets/images/250205_180517_c.jpg",
           "fileName": "250205_180517_c.jpg"
         },
         {
@@ -2126,7 +2095,7 @@
         {
           "contentId": "816_contentId",
           "type": "img",
-          "src": "./images/250205_180425_c.jpg",
+          "src": "./index-assets/images/250205_180425_c.jpg",
           "fileName": "250205_180425_c.jpg"
         },
         {
@@ -2152,7 +2121,7 @@
         {
           "contentId": "420_contentId",
           "type": "img",
-          "src": "./images/250205_180336_c.jpg",
+          "src": "./index-assets/images/250205_180336_c.jpg",
           "fileName": "250205_180336_c.jpg"
         },
         {
@@ -2178,7 +2147,7 @@
         {
           "contentId": "811_contentId",
           "type": "img",
-          "src": "./images/250205_180248_c.jpg",
+          "src": "./index-assets/images/250205_180248_c.jpg",
           "fileName": "250205_180248_c.jpg"
         },
         {
@@ -2204,7 +2173,7 @@
         {
           "contentId": "8_contentId",
           "type": "img",
-          "src": "./images/250205_180209_c.jpg",
+          "src": "./index-assets/images/250205_180209_c.jpg",
           "fileName": "250205_180209_c.jpg"
         },
         {
@@ -2230,7 +2199,7 @@
         {
           "contentId": "752_contentId",
           "type": "img",
-          "src": "./images/250205_180125_c.jpg",
+          "src": "./index-assets/images/250205_180125_c.jpg",
           "fileName": "250205_180125_c.jpg"
         },
         {
@@ -2256,7 +2225,7 @@
         {
           "contentId": "493_contentId",
           "type": "img",
-          "src": "./images/250205_180045_c.jpg",
+          "src": "./index-assets/images/250205_180045_c.jpg",
           "fileName": "250205_180045_c.jpg"
         },
         {
@@ -2282,7 +2251,7 @@
         {
           "contentId": "364_contentId",
           "type": "img",
-          "src": "./images/250205_180002_c.jpg",
+          "src": "./index-assets/images/250205_180002_c.jpg",
           "fileName": "250205_180002_c.jpg"
         },
         {
@@ -2308,7 +2277,7 @@
         {
           "contentId": "268_contentId",
           "type": "img",
-          "src": "./images/250205_175911_c.jpg",
+          "src": "./index-assets/images/250205_175911_c.jpg",
           "fileName": "250205_175911_c.jpg"
         },
         {
@@ -2334,7 +2303,7 @@
         {
           "contentId": "395_contentId",
           "type": "img",
-          "src": "./images/250205_175836_c.jpg",
+          "src": "./index-assets/images/250205_175836_c.jpg",
           "fileName": "250205_175836_c.jpg"
         },
         {
@@ -2360,7 +2329,7 @@
         {
           "contentId": "760_contentId",
           "type": "img",
-          "src": "./images/250205_175757_c.jpg",
+          "src": "./index-assets/images/250205_175757_c.jpg",
           "fileName": "250205_175757_c.jpg"
         },
         {
@@ -2386,7 +2355,7 @@
         {
           "contentId": "223_contentId",
           "type": "img",
-          "src": "./images/250205_175632_c.jpg",
+          "src": "./index-assets/images/250205_175632_c.jpg",
           "fileName": "250205_175632_c.jpg"
         },
         {
@@ -2412,7 +2381,7 @@
         {
           "contentId": "614_contentId",
           "type": "img",
-          "src": "./images/250205_175550_c.jpg",
+          "src": "./index-assets/images/250205_175550_c.jpg",
           "fileName": "250205_175550_c.jpg"
         },
         {
@@ -2438,7 +2407,7 @@
         {
           "contentId": "633_contentId",
           "type": "img",
-          "src": "./images/250205_175508_c.jpg",
+          "src": "./index-assets/images/250205_175508_c.jpg",
           "fileName": "250205_175508_c.jpg"
         },
         {
@@ -2464,7 +2433,7 @@
         {
           "contentId": "638_contentId",
           "type": "img",
-          "src": "./images/250205_175406_c.jpg",
+          "src": "./index-assets/images/250205_175406_c.jpg",
           "fileName": "250205_175406_c.jpg"
         },
         {
@@ -2490,7 +2459,7 @@
         {
           "contentId": "18_contentId",
           "type": "img",
-          "src": "./images/250205_002103_c.jpg",
+          "src": "./index-assets/images/250205_002103_c.jpg",
           "fileName": "250205_002103_c.jpg"
         },
         {
@@ -2516,7 +2485,7 @@
         {
           "contentId": "504_contentId",
           "type": "img",
-          "src": "./images/250205_002032_c.jpg",
+          "src": "./index-assets/images/250205_002032_c.jpg",
           "fileName": "250205_002032_c.jpg"
         },
         {
@@ -2542,7 +2511,7 @@
         {
           "contentId": "447_contentId",
           "type": "img",
-          "src": "./images/250205_001923_c.jpg",
+          "src": "./index-assets/images/250205_001923_c.jpg",
           "fileName": "250205_001923_c.jpg"
         },
         {
@@ -2568,7 +2537,7 @@
         {
           "contentId": "282_contentId",
           "type": "img",
-          "src": "./images/250205_001828_c.jpg",
+          "src": "./index-assets/images/250205_001828_c.jpg",
           "fileName": "250205_001828_c.jpg"
         },
         {
@@ -2594,7 +2563,7 @@
         {
           "contentId": "590_contentId",
           "type": "img",
-          "src": "./images/250205_001731_c.jpg",
+          "src": "./index-assets/images/250205_001731_c.jpg",
           "fileName": "250205_001731_c.jpg"
         },
         {
@@ -2620,7 +2589,7 @@
         {
           "contentId": "865_contentId",
           "type": "img",
-          "src": "./images/250205_001647_c.jpg",
+          "src": "./index-assets/images/250205_001647_c.jpg",
           "fileName": "250205_001647_c.jpg"
         },
         {
@@ -2646,7 +2615,7 @@
         {
           "contentId": "808_contentId",
           "type": "img",
-          "src": "./images/250205_001510_c.jpg",
+          "src": "./index-assets/images/250205_001510_c.jpg",
           "fileName": "250205_001510_c.jpg"
         },
         {
@@ -2672,7 +2641,7 @@
         {
           "contentId": "673_contentId",
           "type": "img",
-          "src": "./images/250205_001422_c.jpg",
+          "src": "./index-assets/images/250205_001422_c.jpg",
           "fileName": "250205_001422_c.jpg"
         },
         {
@@ -2698,7 +2667,7 @@
         {
           "contentId": "16_contentId",
           "type": "img",
-          "src": "./images/250205_001257_c.jpg",
+          "src": "./index-assets/images/250205_001257_c.jpg",
           "fileName": "250205_001257_c.jpg"
         },
         {
@@ -2724,7 +2693,7 @@
         {
           "contentId": "451_contentId",
           "type": "img",
-          "src": "./images/250205_001056_c.jpg",
+          "src": "./index-assets/images/250205_001056_c.jpg",
           "fileName": "250205_001056_c.jpg"
         },
         {

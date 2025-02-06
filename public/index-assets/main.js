@@ -216,7 +216,7 @@
       })
     })
 
-    appData = await loadJson('./content.json')
+    appData = await loadJson('./index-assets/content.json')
 
     redirectToAndDrawPage()
   })

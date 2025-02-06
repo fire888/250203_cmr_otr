@@ -12,7 +12,7 @@ const getFormattedDate = () => {
 /******** API  *******************************************************/
 
 const loadJson = async () => {
-    const response = await fetch('./content.json')
+    const response = await fetch('./index-assets/content.json')
     if (!response.ok) {
         throw new Error('Network response was not OK: ' + response.status)
     }
@@ -89,6 +89,7 @@ document.addEventListener('resize', () => {
 })
 const OW = 50 // offsetW
 let appData = null
+const IMG_SAVE_PATH = './index-assets/images/'
 
 /** elements node ********************************************/
 
@@ -553,7 +554,7 @@ const formsEditNode = async (nodeId = null) => {
             const newDataCandidate = {
                 contentId, 
                 type: 'img', 
-                src: './images/' + fileName, 
+                src: IMG_SAVE_PATH + fileName, 
                 fileName, 
                 formData, 
             }
@@ -630,7 +631,7 @@ const formsEditNode = async (nodeId = null) => {
                 formData.append('file', blob, fileName)
                 const resultPost = await postFileToServer(formData)
                 if (resultPost === 'upload successful') {
-                    nodeData.preview.imgSrc = './images/' + fileName
+                    nodeData.preview.imgSrc = IMG_SAVE_PATH + fileName
                     delete nodeData.preview.imageCandidate
                 }
             }

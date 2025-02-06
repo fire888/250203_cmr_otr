@@ -9,14 +9,14 @@ const PORT = 3000
 
 const saveDataAsync = async (newData) => {
   try {
-    await fs.writeFile('./public/content.json', JSON.stringify(newData, null, 2))
+    await fs.writeFile('./public/index-assets/content.json', JSON.stringify(newData, null, 2))
     console.log("Data saved successfully (async).")
   } catch (err) {
     console.error("Error saving data:", err);
   }
 }
 
-const UPLOAD_DIR = path.join(__dirname, '../public/images')
+const UPLOAD_DIR = path.join(__dirname, '../public/index-assets/images')
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, UPLOAD_DIR)
