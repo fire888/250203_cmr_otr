@@ -20,10 +20,15 @@ const loadJson = async () => {
     return data
 }
 const postDataToServer = async (data) => {
-    const response = await fetch('./api/updateAppData', {
+    const jsonData = JSON.stringify(data)
+    const fileBlob = new Blob([jsonData], { type: "application/json" });
+
+    const formData = new FormData();
+    formData.append("file", fileBlob, "content.json"); 
+
+    const response = await fetch('./api/save-content-json', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ appData: data })
+        body: formData,
     })
     if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`)
@@ -64,7 +69,8 @@ const checkParamsUrl = () => {
     const urlParams = new URLSearchParams(queryString)
     const data = {
         nodeId: null,
-        listId: null, 
+        listId: null,
+        page: null,
     }
     for (const [key, value] of urlParams.entries()) {
         if (key === 'node') {
@@ -72,6 +78,9 @@ const checkParamsUrl = () => {
         }
         if (key === 'list') {
             data.listId = value
+        }
+        if (key === 'page') {
+            data.page = value
         }
     }
     return data
@@ -90,6 +99,7 @@ document.addEventListener('resize', () => {
 const OW = 50 // offsetW
 let appData = null
 const IMG_SAVE_PATH = './index-assets/images/'
+const ITEMS_PER_PAGE = 20
 
 /** elements node ********************************************/
 
@@ -280,8 +290,22 @@ const drawNode = async (nodeId) => {
 
     drawElem('div', wrapper, JSON.stringify(node, null, 2), 'code')
 }
+
 /** list ********************************************************** */
-const drawList = async (listId) => {
+const drawPager = (wrapper, countItems, index, numPerPage, tag) => {
+    const n = Math.ceil(countItems / numPerPage)
+    if (n < 2) return;
+
+    drawEmptyLine(wrapper, 40)
+    const wr = drawElem('div', wrapper, null, 'pager')
+    for (let i = 0; i < n; ++i) {
+        const a = drawElem('a', wr, +index === i ? '[' + i + ']' : i + '')
+        if (+index !== i) a.addEventListener('click', () => {
+            redirectToAndDrawPage('list', tag, i)
+        })
+    }
+}
+const drawList = async (listId, page = 0) => {
     const addNewNodeButton = document.querySelector('.add-new-node')
     addNewNodeButton.style.display = 'block'  
     const contentWrapper = document.querySelector('.content')
@@ -296,36 +320,50 @@ const drawList = async (listId) => {
         nodes = appData.nodes
     }
     nodes = nodes.sort((a, b) => b.raiting - a.raiting)
-    for (let i = 0; i < nodes.length; i++) {
+
+    console.log('NNN PAGE', page)
+    let startIndex = page * ITEMS_PER_PAGE
+    let endIndex = startIndex + ITEMS_PER_PAGE    
+
+    for (let i = startIndex; i < endIndex; i++) {
+        if (!nodes[i]) {
+            break;
+        }
         await drawPreviewNode(nodes[i].id, contentWrapper) 
     }
+
+    drawPager(contentWrapper, nodes.length, page, ITEMS_PER_PAGE, listId)
 }
+
+
+
 /** reset page ********************************************/
-const redirectToAndDrawPage = async (type = null, id = null) => {
+const pause = t => new Promise(res => { setTimeout(res, t) }) 
+const redirectToAndDrawPage = async (type = null, id = null, page = 0) => {
     const wrapperEdit = document.querySelector('.edit-node')
     wrapperEdit.innerHTML = ''
     const wrapper = document.querySelector('.content')
     wrapper.innerHTML = ''
     window.scrollTo(0, 0)
-
+    await pause(100)
     const data = await loadJson()
     appData = data
 
-    if (type && id) {
-        window.history.pushState({ someData: 123 }, '', `?${type}=${id}`)
-    } else {
-        window.history.pushState({ someData: 123 }, '', '?')
-    }
+    let str = '?'
+    if (page !== null) str += `page=${page}`
+    if (type && id) str += `&${type}=${id}`
+
+    window.history.pushState({ someData: 123 }, '', str)
 
     const params = checkParamsUrl()
     if (params.nodeId) {
         await drawNode(params.nodeId)
     }
     if (params.listId) {
-        await drawList(params.listId)
+        await drawList(params.listId, params.page)
     }
     if (!params.nodeId && !params.listId) {
-        await drawList(null)
+        await drawList(null, params.page)
     }
 }
 
