@@ -1,5 +1,6 @@
 (() => {
   /*********** Глобальные переменные и состояния *****************************/
+  
   const NUM_NODES_IN_LIST = 20
   const OFFSET_W = 5
   let w, h, minKey
@@ -10,8 +11,7 @@
     w = window.innerWidth;
     h = window.innerHeight;
     minKey = w < h ? 'w' : 'h'
-  };
-
+  }
   updateDimensions()
   window.addEventListener('resize', updateDimensions)
 
@@ -39,12 +39,20 @@
     }
   }
 
+  /*********** Рисование элементов  ******************************************/
+
   const clearContent = () => {
     contentWrapper.innerHTML = ''
     window.scrollTo(0, 0)
   }
 
-  /*********** Рисование элементов  ******************************************/
+  const drawElem = (wrapper, type, text, className) => {
+    const elem = document.createElement(type)
+    wrapper.appendChild(elem)
+    text && (elem.innerText = text)
+    className && elem.classList.add(className)
+    return elem 
+  }
 
   const drawImage = async (src, wrapper) => {
     return new Promise((resolve) => {
@@ -94,12 +102,10 @@
     const node = appData.nodes.find((n) => n.id === nodeId)
     if (!node || !node.isPublished) return;
 
-    const el = document.createElement('div')
-    el.classList.add('view-list-item')
+    const el = drawElem(parent, 'div', null, 'view-list-item')
     el.addEventListener('click', () => {
         redirectToAndDrawPage('node', nodeId)
     })
-    parent.appendChild(el)
 
     const { imgSrc, text } = node.preview
     if (imgSrc) {
@@ -131,14 +137,10 @@
     if (n < 2) return;
 
     drawEmptyLine(wrapper, 40)
-    const wr = document.createElement('div')
-    wr.classList.add('pager')
-    wrapper.appendChild(wr)
+    const wr = drawElem(wrapper, 'div', null, 'pager')
     for (let i = 0; i < n; ++i) {
-      const a = document.createElement('a')
-      a.innerText = +index === i ? '[' + i + ']' : i + ''
-      wr.appendChild(a)
-      +index !== i && a.addEventListener('click', () => {
+      const a = drawElem(wr, 'a', +index === i ? '[' + i + ']' : i + '')
+      if (+index !== i) a.addEventListener('click', () => {
         redirectToAndDrawPage('list', tag, i)
       })
     }
@@ -148,15 +150,12 @@
     const nodes = appData.nodes
       .filter((n) => n.tags?.includes(listId))
       .sort((a, b) => b.raiting - a.raiting)
-
-      
+  
     const startIndex = pageNum * NUM_NODES_IN_LIST
     const endIndex = startIndex + NUM_NODES_IN_LIST
 
     if (listId === 'code' || listId === 'design') {
-      const viewList = document.createElement('div')
-      viewList.classList.add('view-list')
-      contentWrapper.appendChild(viewList)
+      const viewList = drawElem(contentWrapper, 'div', null, 'viewList')
       for (let i = startIndex; i < endIndex; ++i) { 
         if (!nodes[i]) break;
         await drawPreviewNode(nodes[i].id, viewList)
@@ -189,7 +188,9 @@
     })
   }
 
-  const redirectToAndDrawPage = async (type = 'list', id = 'code', pageNum = 0) => {
+  /*********** Основная логика ***********************************************/
+
+  const redirectToAndDrawPage = async (type = 'list', id = 'zbrush', pageNum = 0) => {
     clearContent()
     window.history.pushState({ type, id, page: pageNum }, '', `?${type}=${id}&page=${pageNum}`)
     const { nodeId, listId, page } = parseUrlParams()
@@ -201,8 +202,6 @@
         await drawList(listId, page)
     }
   }
-
-  /*********** Основная логика ***********************************************/
 
   window.addEventListener('popstate', () => {
     redirectToAndDrawPage()

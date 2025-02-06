@@ -17,6 +17,8 @@ const saveDataAsync = async (newData) => {
 }
 
 const UPLOAD_DIR = path.join(__dirname, '../public/index-assets/images')
+const DELETE_DIR = './public/index-assets/images/'
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, UPLOAD_DIR)
@@ -51,7 +53,7 @@ app.post('/api/upload-image', upload.single('file'), (req, res) => {
 
 app.post('/api/delete-image', async (req, res) => {
   const { fileName } = req.body
-  fs.unlink('./public/images/' + fileName, (err) => {
+  fs.unlink(DELETE_DIR + fileName, (err) => {
       if (err) {
         console.error('Ошибка при удалении:', err);
         return; 
