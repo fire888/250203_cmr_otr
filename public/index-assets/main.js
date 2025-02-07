@@ -6,6 +6,7 @@
   let w, h, minKey
   let appData = null
   const contentWrapper = document.querySelector('.content')
+  const PATH_TO_DATA = './index-assets/content/_content.json'
 
   const updateDimensions = () => {
     w = window.innerWidth;
@@ -16,6 +17,32 @@
   window.addEventListener('resize', updateDimensions)
 
   /*********** Утилиты *******************************************************/
+
+  const breakerListDraw = (() => { 
+    let promiseToComplete = null
+    let isUpdateInProcess = false
+    return {
+      waitDropLoadingPrevious: () => {
+        return new Promise((resolve) => {
+          if (!isUpdateInProcess) {
+            return resolve()
+          }
+          promiseToComplete = resolve 
+        })
+      },
+      setIsUpdateInProcess: (value) => { isUpdateInProcess = value },
+      checkIsMustBreak: () => {
+        return !!promiseToComplete
+      },
+      completeBreak: () => {
+        if (!promiseToComplete) {
+          return;
+        }
+        promiseToComplete()
+        promiseToComplete = null
+      } 
+    } 
+  })()
 
   const loadJson = async (url) => {
     try {
@@ -156,23 +183,20 @@
 
     if (listId === 'code' || listId === 'design') {
       const viewList = drawElem(contentWrapper, 'div', null, 'viewList')
-      for (let i = startIndex; i < endIndex; ++i) { 
+      for (let i = startIndex; i < endIndex; ++i) {
         if (!nodes[i]) break;
         await drawPreviewNode(nodes[i].id, viewList)
       }
     } else {
       for (let i = startIndex; i < endIndex; ++i) {
+        if (breakerListDraw.checkIsMustBreak()) return;
         if (!nodes[i]) break;
         const node = nodes[i]
-        let isImg = false
-        let isText = false
         if (node.content[0] && node.content[0].type === 'img') {
           await drawImageSizeScreen(node.content[0].src, contentWrapper)
-          isImg = true
         }
         if (node.content[1] && node.content[1].type === 'text') {
           drawText(node.content[1].html, contentWrapper)
-          isText = true
         }
       }
     }
@@ -191,6 +215,9 @@
   /*********** Основная логика ***********************************************/
 
   const redirectToAndDrawPage = async (type = 'list', id = 'zbrush', pageNum = 0) => {
+    // wait loading prev view 
+    await breakerListDraw.waitDropLoadingPrevious()
+    breakerListDraw.setIsUpdateInProcess(true)
     clearContent()
     window.history.pushState({ type, id, page: pageNum }, '', `?${type}=${id}&page=${pageNum}`)
     const { nodeId, listId, page } = parseUrlParams()
@@ -201,6 +228,9 @@
         redrawMainMenu(listId)
         await drawList(listId, page)
     }
+    // clear blocker for new loading if it exists
+    breakerListDraw.setIsUpdateInProcess(false)
+    breakerListDraw.completeBreak()
   }
 
   window.addEventListener('popstate', () => {
@@ -215,7 +245,7 @@
       })
     })
 
-    appData = await loadJson('./index-assets/content.json')
+    appData = await loadJson(PATH_TO_DATA)
 
     redirectToAndDrawPage()
   })

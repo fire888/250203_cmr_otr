@@ -1,3 +1,21 @@
+/** GLOBAL DATA ***********************************************/
+
+const PATH_TO_DATA = './index-assets/content/_content.json'
+const IMG_SAVE_PATH = './index-assets/content/'
+const ITEMS_PER_PAGE = 20
+let w = window.innerWidth
+let h = window.innerHeight
+let minKey = w < h ? 'w' : 'h'
+document.addEventListener('resize', () => {
+    w = window.innerWidth
+    h = window.innerHeight
+    minKey = w < h ? 'w' : 'h'
+})
+const OW = 50 // offsetW
+let appData = null
+
+/** HELPERS *********************************************************/
+
 const getFormattedDate = () => {
     const date = new Date()
     const year = String(date.getFullYear()).slice(-2);
@@ -12,7 +30,7 @@ const getFormattedDate = () => {
 /******** API  *******************************************************/
 
 const loadJson = async () => {
-    const response = await fetch('./index-assets/content.json')
+    const response = await fetch(PATH_TO_DATA)
     if (!response.ok) {
         throw new Error('Network response was not OK: ' + response.status)
     }
@@ -24,7 +42,7 @@ const postDataToServer = async (data) => {
     const fileBlob = new Blob([jsonData], { type: "application/json" });
 
     const formData = new FormData();
-    formData.append("file", fileBlob, "content.json"); 
+    formData.append("file", fileBlob, "_content.json"); 
 
     const response = await fetch('./api/save-content-json', {
         method: 'POST',
@@ -85,21 +103,6 @@ const checkParamsUrl = () => {
     }
     return data
 }
-
-/** GLOBAL DATA ***********************************************/
-
-let w = window.innerWidth
-let h = window.innerHeight
-let minKey = w < h ? 'w' : 'h'
-document.addEventListener('resize', () => {
-    w = window.innerWidth
-    h = window.innerHeight
-    minKey = w < h ? 'w' : 'h'
-})
-const OW = 50 // offsetW
-let appData = null
-const IMG_SAVE_PATH = './index-assets/images/'
-const ITEMS_PER_PAGE = 20
 
 /** elements node ********************************************/
 

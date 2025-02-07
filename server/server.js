@@ -7,13 +7,13 @@ const multer = require('multer')
 const app = express()
 const PORT = 3000
 
-const UPLOAD_IMAGE_DIR = path.join(__dirname, '../public/index-assets/images')
-const DELETE_DIR_IMAGE_DIR = './public/index-assets/images/'
-const UPDATE_CONTENT_DIR = './public/index-assets/'
+const UPLOAD_IMAGE_DIR = path.join(__dirname, '../public/index-assets/content')
+const DELETE_DIR_IMAGE_DIR = './public/index-assets/content/'
+const UPDATE_CONTENT_DIR = './public/index-assets/content'
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    if (file.originalname === 'content.json') {
+    if (file.originalname === '_content.json') {
       cb(null, UPDATE_CONTENT_DIR)
     }
     cb(null, UPLOAD_IMAGE_DIR)
