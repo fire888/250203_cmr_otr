@@ -64,13 +64,9 @@ const FILES = [
       src: '../public/index.html',
       dest: '../../../250205_gitHubPages/gitHubPages/index.html'
   },
-  {
-      src: '../public/index-assets/content.json',
-      dest: '../../../250205_gitHubPages/gitHubPages/index-assets/content.json'
-  },
 ] 
-const SOURCE_FOLDER = '../public/index-assets/images'
-const DEST_FOLDER = '../../../250205_gitHubPages/gitHubPages/index-assets/images'
+const SOURCE_FOLDER = '../public/index-assets/content'
+const DEST_FOLDER = '../../../250205_gitHubPages/gitHubPages/index-assets/content';
 
 (async () => {
   try {
