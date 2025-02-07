@@ -321,21 +321,46 @@ const drawList = async (listId, page = 0) => {
     }
     nodes = nodes.sort((a, b) => b.raiting - a.raiting)
 
-    console.log('NNN PAGE', page)
     let startIndex = page * ITEMS_PER_PAGE
     let endIndex = startIndex + ITEMS_PER_PAGE    
 
     for (let i = startIndex; i < endIndex; i++) {
-        if (!nodes[i]) {
-            break;
-        }
-        await drawPreviewNode(nodes[i].id, contentWrapper) 
-    }
+        if (!nodes[i]) break;
 
+        await drawPreviewNode(nodes[i].id, contentWrapper)
+        const w = drawElem('div', contentWrapper, null, 'pager')
+        drawElem('button', w, '🔼🔼🔼').addEventListener('click', async () => {
+            if (i === 0) return;
+
+            const indexPrevNode = i - 1
+            const save = appData.nodes[indexPrevNode]
+            appData.nodes[indexPrevNode] = appData.nodes[i]
+            appData.nodes[i] = save 
+            await postDataToServer(appData)
+            redirectToAndDrawPage('list', listId, page)
+        })
+        drawElem('button', w, '🔽🔽🔽').addEventListener('click', async () => {
+            if (i === nodes.length - 1) return;
+
+            const indexNextNode = i + 1
+            const save = appData.nodes[indexNextNode]
+            appData.nodes[indexNextNode] = appData.nodes[i]
+            appData.nodes[i] = save 
+            await postDataToServer(appData)
+            redirectToAndDrawPage('list', listId, page)
+        })
+        drawElem('button', w, '🗑️🗑️🗑️🗑️🗑️🗑️🗑️').addEventListener('click', async e => {
+            const isOk = await drawAlert()
+            if (!isOk) return;
+
+            // TODO: REMOVE IMAGES 
+            appData.nodes = appData.nodes.filter(n => n.id !== nodes[i].id)
+            await postDataToServer(appData)
+            redirectToAndDrawPage('list', listId, page)
+        })
+    }
     drawPager(contentWrapper, nodes.length, page, ITEMS_PER_PAGE, listId)
 }
-
-
 
 /** reset page ********************************************/
 const pause = t => new Promise(res => { setTimeout(res, t) }) 
