@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "nodemon server/server.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "toGHP": "cd dev && node moverJSToFolder.js"
+    "toGHP": "cd dev && node moveToGitPages.js",
+    "cleanImages": "cd dev && node cleanerFolderImages.js"
   },
   "author": "",
   "license": "ISC",
@@ -15,6 +16,7 @@
   },
   "dependencies": {
     "express": "^4.21.2",
+    "fs-extra": "^11.3.0",
     "multer": "^1.4.5-lts.1"
   }
 }
