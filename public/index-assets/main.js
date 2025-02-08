@@ -1,12 +1,12 @@
 (() => {
   /*********** Глобальные переменные и состояния *****************************/
-  
+  const START_TAG = 'code'
   const NUM_NODES_IN_LIST = 20
   const OFFSET_W = 5
   let w, h, minKey
   let appData = null
   const contentWrapper = document.querySelector('.content')
-  const PATH_TO_DATA = './index-assets/content/_content.json'
+  const PATH_TO_DATA = './index-assets/content/0_content.json'
 
   const updateDimensions = () => {
     w = window.innerWidth;
@@ -182,7 +182,7 @@
     const endIndex = startIndex + NUM_NODES_IN_LIST
 
     if (listId === 'code' || listId === 'design') {
-      const viewList = drawElem(contentWrapper, 'div', null, 'viewList')
+      const viewList = drawElem(contentWrapper, 'div', null, 'view-list')
       for (let i = startIndex; i < endIndex; ++i) {
         if (!nodes[i]) break;
         await drawPreviewNode(nodes[i].id, viewList)
@@ -214,7 +214,7 @@
 
   /*********** Основная логика ***********************************************/
 
-  const redirectToAndDrawPage = async (type = 'list', id = 'zbrush', pageNum = 0) => {
+  const redirectToAndDrawPage = async (type = 'list', id = START_TAG, pageNum = 0) => {
     // wait loading prev view 
     await breakerListDraw.waitDropLoadingPrevious()
     breakerListDraw.setIsUpdateInProcess(true)

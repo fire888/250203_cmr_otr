@@ -1,6 +1,7 @@
 /** GLOBAL DATA ***********************************************/
 
-const PATH_TO_DATA = './index-assets/content/_content.json'
+const FILE_NAME_CONTENT = "0_content.json"  
+const PATH_TO_DATA = './index-assets/content/' + FILE_NAME_CONTENT
 const IMG_SAVE_PATH = './index-assets/content/'
 const ITEMS_PER_PAGE = 20
 let w = window.innerWidth
@@ -42,7 +43,7 @@ const postDataToServer = async (data) => {
     const fileBlob = new Blob([jsonData], { type: "application/json" });
 
     const formData = new FormData();
-    formData.append("file", fileBlob, "_content.json"); 
+    formData.append("file", fileBlob, FILE_NAME_CONTENT)
 
     const response = await fetch('./api/save-content-json', {
         method: 'POST',
@@ -118,6 +119,16 @@ const drawInput = (wrapper, type, value, placeholder) => {
     const elem = document.createElement('input')
     wrapper.appendChild(elem)
     elem.type = type
+    value && (elem.value = value)
+    placeholder && (elem.placeholder = placeholder)
+    return elem
+}
+
+const drawTextarea = (wrapper, value, placeholder) => {
+    const elem = document.createElement('textarea')
+    elem.rows="5" 
+    elem.cols="50"
+    wrapper.appendChild(elem)
     value && (elem.value = value)
     placeholder && (elem.placeholder = placeholder)
     return elem
@@ -553,7 +564,7 @@ const formsEditNode = async (nodeId = null) => {
         const contentId = data ? data.contentId : Math.floor(Math.random() * 1000) + '_contentId'
         orderContent.addElem({ contentId, dom: wr })
         
-        drawInput(wr, 'text', data ? data.html : '', 'content text').addEventListener('change', e => {
+        drawTextarea(wr, data ? data.html : '', 'content text').addEventListener('input', e => {
             let current = null
             for (let i = 0; i < nodeData.content.length; i++) {
                 if (nodeData.content[i].contentId === contentId) {

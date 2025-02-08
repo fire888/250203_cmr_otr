@@ -10,10 +10,11 @@ const PORT = 3000
 const UPLOAD_IMAGE_DIR = path.join(__dirname, '../public/index-assets/content')
 const DELETE_DIR_IMAGE_DIR = './public/index-assets/content/'
 const UPDATE_CONTENT_DIR = './public/index-assets/content'
+const FILE_NAME_CONTENT = '0_content.json' 
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    if (file.originalname === '_content.json') {
+    if (file.originalname === FILE_NAME_CONTENT) {
       cb(null, UPDATE_CONTENT_DIR)
     }
     cb(null, UPLOAD_IMAGE_DIR)
