@@ -7,6 +7,7 @@
   let appData = null
   const contentWrapper = document.querySelector('.content')
   const PATH_TO_DATA = './index-assets/content/0_content.json'
+  const HISTORY_WINDOW = []
 
   const updateDimensions = () => {
     w = window.innerWidth;
@@ -214,12 +215,15 @@
 
   /*********** Основная логика ***********************************************/
 
-  const redirectToAndDrawPage = async (type = 'list', id = START_TAG, pageNum = 0) => {
+  const redirectToAndDrawPage = async (type = 'list', id = START_TAG, pageNum = 0, isPushState = true) => {
     // wait loading prev view 
     await breakerListDraw.waitDropLoadingPrevious()
     breakerListDraw.setIsUpdateInProcess(true)
     clearContent()
-    window.history.pushState({ type, id, page: pageNum }, '', `?${type}=${id}&page=${pageNum}`)
+    window.history.replaceState({ type, id, page: pageNum }, '', `?${type}=${id}&page=${pageNum}`)
+    if (isPushState) { 
+      HISTORY_WINDOW.push({ type, id, page: pageNum })
+    }
     const { nodeId, listId, page } = parseUrlParams()
     if (nodeId) {
         await drawNode(nodeId)
@@ -233,8 +237,11 @@
     breakerListDraw.completeBreak()
   }
 
-  window.addEventListener('popstate', () => {
-    redirectToAndDrawPage()
+  window.addEventListener('popstate', async () => {
+    const last = HISTORY_WINDOW[HISTORY_WINDOW.length - 2]
+    HISTORY_WINDOW.splice(HISTORY_WINDOW.length - 1, 1)
+    if (!last) return;
+    await redirectToAndDrawPage(last.type || 'list', last.id || START_TAG, last.page || 0, false) 
   })
 
   document.addEventListener('DOMContentLoaded', async () => {
