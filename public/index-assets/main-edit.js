@@ -561,7 +561,7 @@ const formsEditNode = async (nodeId = null) => {
     // create text **********************************************/
     const createElementText = (data) => {
         const wr = document.createElement('div')
-        const contentId = data ? data.contentId : Math.floor(Math.random() * 1000) + '_contentId'
+        const contentId = (data && data.contentId) ? data.contentId : Math.floor(Math.random() * 1000) + '_contentId'
         orderContent.addElem({ contentId, dom: wr })
         
         drawTextarea(wr, data ? data.html : '', 'content text').addEventListener('input', e => {
@@ -678,6 +678,9 @@ const formsEditNode = async (nodeId = null) => {
     drawEmptyLine(wrapper)
     drawElem('button', wrapper, 'add 🖼').addEventListener('click', () => createElementImage())
     drawElem('button', wrapper, 'add ✍️').addEventListener('click', () => createElementText())
+    drawElem('button', wrapper, 'add ✍️🔳').addEventListener('click', () => createElementText({
+        html: '<a href="" target="_blank" class="red-button">Запуск локации</a>'
+    }))
     drawEmptyLine(wrapper)
 
     // save *******************************************************/
