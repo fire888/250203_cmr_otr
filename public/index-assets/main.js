@@ -220,9 +220,11 @@
     await breakerListDraw.waitDropLoadingPrevious()
     breakerListDraw.setIsUpdateInProcess(true)
     clearContent()
-    window.history.replaceState({ type, id, page: pageNum }, '', `?${type}=${id}&page=${pageNum}`)
     if (isPushState) { 
       HISTORY_WINDOW.push({ type, id, page: pageNum })
+      window.history.pushState({ type, id, page: pageNum }, '', `?${type}=${id}&page=${pageNum}`)
+    } else {
+      window.history.replaceState({ type, id, page: pageNum }, '', `?${type}=${id}&page=${pageNum}`)
     }
     const { nodeId, listId, page } = parseUrlParams()
     if (nodeId) {
