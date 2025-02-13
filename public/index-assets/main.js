@@ -8,6 +8,13 @@
   const contentWrapper = document.querySelector('.content')
   const PATH_TO_DATA = './index-assets/content/0_content.json'
   const HISTORY_WINDOW = []
+  const NAV = {
+    'code': { type: 'list', id: 'code', },
+    'zbrush': { type: 'list', id: 'zbrush', },
+    'design': { type: 'list', id: 'design', },
+    'art': { type: 'list', id: 'art', },
+    'me': { type: 'node', id: '880109_' },
+  }
 
   const updateDimensions = () => {
     w = window.innerWidth;
@@ -204,10 +211,10 @@
     drawPager(contentWrapper, nodes.length, pageNum, NUM_NODES_IN_LIST, listId)
   }
 
-  const redrawMainMenu = (listId) => {
+  const redrawMainMenu = (navId) => {
     const links = document.querySelectorAll('.nav-item')
     links.forEach((link) => {
-      link.id === listId 
+      link.id === navId 
         ? link.classList.add('current') 
         : link.classList.remove('current')
     })
@@ -230,8 +237,16 @@
     if (nodeId) {
         await drawNode(nodeId)
     }
-    if (listId) {
-        redrawMainMenu(listId)
+    let domNavId = null
+    for (let key in NAV) {
+      if (NAV[key].id === id && NAV[key].type === type) {
+        domNavId = key
+      }
+    }
+    if (domNavId) {
+        redrawMainMenu(domNavId)
+    }
+    if (listId) {    
         await drawList(listId, page)
     }
     // clear blocker for new loading if it exists
@@ -250,7 +265,7 @@
     const links = document.querySelectorAll('.nav-item')
     links.forEach((link) => {
       link.addEventListener('click', () => {
-        redirectToAndDrawPage('list', link.id, 0)
+        redirectToAndDrawPage(NAV[link.id].type, NAV[link.id].id, 0)
       })
     })
 
