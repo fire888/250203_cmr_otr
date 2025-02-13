@@ -338,6 +338,8 @@ const drawList = async (listId, page = 0) => {
     let startIndex = page * ITEMS_PER_PAGE
     let endIndex = startIndex + ITEMS_PER_PAGE    
 
+    drawPager(contentWrapper, nodes.length, page, ITEMS_PER_PAGE, listId)
+
     for (let i = startIndex; i < endIndex; i++) {
         if (!nodes[i]) break;
 
