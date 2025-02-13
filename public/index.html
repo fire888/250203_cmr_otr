@@ -13,6 +13,8 @@
         body {
           font-family: Philosopher;
           color: #223495;
+          margin: 0;
+          padding: 0;
         }
         .app {
             margin-bottom: 100px;
@@ -20,12 +22,12 @@
         .nav {
             max-width: 600px;
             display: flex;
+            flex-wrap: wrap;
             flex-direction: row;
-            margin: 0 auto;
+            margin: 0 auto 15px;
         }
         .nav div:last-child {
             margin-left: auto;
-            /* margin-bottom: 50px;  */
             float: right;
         }
         .nav-item {
@@ -53,18 +55,20 @@
             align-content: center;
             overflow: hidden;
         }
-        .content {
+        /* .content {
             margin: 10px;
+        } */
+        .content > p {
+          margin-bottom: 30px;
         }
         .view-list {
             display: flex;
             flex-wrap: wrap;
-            gap: 30px;
-            max-width: 1000px;
+            gap: 15px;
+            max-width: 870px;
             margin: 0 auto;
         }
         .view-list-item {
-            /* flex: 1 1 calc(33.333% - 30px); */
             flex: 1 1 270px; 
             max-width: 270px;
             box-sizing: border-box;
@@ -85,6 +89,7 @@
         .pager {
           display: flex;
           flex-direction: row;
+          flex-wrap: wrap;
           gap: 15px;
           justify-content: center;
           font-size: 22px;
@@ -94,14 +99,17 @@
         }
         @media screen and (max-width: 768px) {
           .view-list-item {
-              flex: 1 1 calc(50% - 16px);
+              flex: 1 1 40%;
+          }
+          .view-list {
+            gap: 5px;
           }
         }
-        @media screen and (max-width: 480px) {
+        /* @media screen and (max-width: 480px) {
           .view-list-item {
               flex: 1 1 100%;
           }
-        }
+        } */
         .red-button {
           border: 3px solid rgb(146, 0, 0);
           display: block;
