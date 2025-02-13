@@ -183,6 +183,7 @@
 
   const drawList = async (listId, pageNum = 0) => {
     const nodes = appData.nodes
+      .filter((n) => n.isPublished)
       .filter((n) => n.tags?.includes(listId))
       .sort((a, b) => b.raiting - a.raiting)
   
