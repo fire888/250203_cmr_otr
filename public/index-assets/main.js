@@ -211,10 +211,17 @@
     drawPager(contentWrapper, nodes.length, pageNum, NUM_NODES_IN_LIST, listId)
   }
 
-  const redrawMainMenu = (navId) => {
+  const redrawMainMenu = (type, id) => {
+    let domNavId = null
+    for (let key in NAV) {
+      if (NAV[key].id === id && NAV[key].type === type) {
+        domNavId = key
+      }
+    }
+    if (!domNavId) return;
     const links = document.querySelectorAll('.nav-item')
     links.forEach((link) => {
-      link.id === navId 
+      link.id === domNavId 
         ? link.classList.add('current') 
         : link.classList.remove('current')
     })
@@ -237,15 +244,7 @@
     if (nodeId) {
         await drawNode(nodeId)
     }
-    let domNavId = null
-    for (let key in NAV) {
-      if (NAV[key].id === id && NAV[key].type === type) {
-        domNavId = key
-      }
-    }
-    if (domNavId) {
-        redrawMainMenu(domNavId)
-    }
+    redrawMainMenu(type, id)
     if (listId) {    
         await drawList(listId, page)
     }
