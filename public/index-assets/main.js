@@ -1,5 +1,6 @@
 (() => {
   /*********** Глобальные переменные и состояния *****************************/
+
   const START_TAG = 'code'
   const NUM_NODES_IN_LIST = 24
   const OFFSET_W = 5
@@ -7,7 +8,6 @@
   let appData = null
   const contentWrapper = document.querySelector('.content')
   const PATH_TO_DATA = './index-assets/content/0_content.json'
-  const HISTORY_WINDOW = []
   const NAV = {
     'code': { type: 'list', id: 'code', },
     'zbrush': { type: 'list', id: 'zbrush', },
@@ -26,32 +26,6 @@
 
   /*********** Утилиты *******************************************************/
 
-  const breakerListDraw = (() => { 
-    let promiseToComplete = null
-    let isUpdateInProcess = false
-    return {
-      waitDropLoadingPrevious: () => {
-        return new Promise((resolve) => {
-          if (!isUpdateInProcess) {
-            return resolve()
-          }
-          promiseToComplete = resolve 
-        })
-      },
-      setIsUpdateInProcess: (value) => { isUpdateInProcess = value },
-      checkIsMustBreak: () => {
-        return !!promiseToComplete
-      },
-      completeBreak: () => {
-        if (!promiseToComplete) {
-          return;
-        }
-        promiseToComplete()
-        promiseToComplete = null
-      } 
-    } 
-  })()
-
   const loadJson = async (url) => {
     try {
       const response = await fetch(url)
@@ -67,19 +41,20 @@
 
   const parseUrlParams = () => {
     const urlParams = new URLSearchParams(window.location.search);
-    return {
-      nodeId: urlParams.get('node') || null,
-      listId: urlParams.get('list') || null,
-      page: urlParams.get('page') || null,
+    let type = null
+    let id = null
+    if (urlParams.get('node')) { 
+      type = 'node'
+      id = urlParams.get('node')
     }
+    if (urlParams.get('list')) { 
+      type = 'list'
+      id = urlParams.get('list')
+    }
+    return { type, id, page: urlParams.get('page') || null }
   }
 
   /*********** Рисование элементов  ******************************************/
-
-  const clearContent = () => {
-    contentWrapper.innerHTML = ''
-    window.scrollTo(0, 0)
-  }
 
   const drawElem = (wrapper, type, text, className) => {
     const elem = document.createElement(type)
@@ -139,9 +114,8 @@
 
     const el = drawElem(parent, 'div', null, 'view-list-item')
     el.addEventListener('click', () => {
-        redirectToAndDrawPage('node', nodeId)
+      window.location.href = `?node=${nodeId}`
     })
-
     const { imgSrc, text } = node.preview
     if (imgSrc) {
       await drawImage(imgSrc, el)
@@ -157,7 +131,6 @@
       console.warn('Node not found or not published:', nodeId)
       return;
     }
-
     for (const block of node.content) {
       if (block.type === 'img') {
         await drawImageSizeScreen(block.src, contentWrapper)
@@ -170,13 +143,12 @@
   const drawPager = (wrapper, countItems, index, numPerPage, tag) => {
     const n = Math.ceil(countItems / numPerPage)
     if (n < 2) return;
-
     drawEmptyLine(wrapper, 40)
     const wr = drawElem(wrapper, 'div', null, 'pager')
     for (let i = 0; i < n; ++i) {
       const a = drawElem(wr, 'a', +index === i ? '[' + i + ']' : i + '')
       if (+index !== i) a.addEventListener('click', () => {
-        redirectToAndDrawPage('list', tag, i)
+        window.location.href = `?list=${tag}&page=${i}`
       })
     }
   }
@@ -198,9 +170,6 @@
       }
     } else {
       for (let i = startIndex; i < endIndex; ++i) {
-        if (breakerListDraw.checkIsMustBreak()) { 
-          return;
-        }
         if (!nodes[i]) break;
         const node = nodes[i]
         if (node.content[0] && node.content[0].type === 'img') {
@@ -232,57 +201,29 @@
 
   /*********** Основная логика ***********************************************/
 
-  const redirectToAndDrawPage = async (type = 'list', id = START_TAG, pageNum = 0, isPushState = true) => {
-    // wait loading prev view 
-    await breakerListDraw.waitDropLoadingPrevious()
-    breakerListDraw.setIsUpdateInProcess(true)
-    clearContent()
-    if (isPushState) { 
-      HISTORY_WINDOW.push({ type, id, page: pageNum })
-      window.history.pushState({ type, id, page: pageNum }, '', `?${type}=${id}&page=${pageNum}`)
-    } else {
-      window.history.replaceState({ type, id, page: pageNum }, '', `?${type}=${id}&page=${pageNum}`)
-    }
-    const { nodeId, listId, page } = parseUrlParams()
-
-    let footer, loader
-    if (listId || nodeId) {
-      footer = document.querySelector('.footer') 
-      loader = drawElem(footer, 'div', null, 'loader-spin')
-
-    }
-    if (nodeId) {
-        await drawNode(nodeId)
-    }
-    redrawMainMenu(type, id)
-    if (listId) {    
-        await drawList(listId, page)
-    }
-    if (footer && loader) {
-      footer.removeChild(loader)
-    }
-    // clear blocker for new loading if it exists
-    breakerListDraw.setIsUpdateInProcess(false)
-    breakerListDraw.completeBreak()
-  }
-
-  window.addEventListener('popstate', async () => {
-    const last = HISTORY_WINDOW[HISTORY_WINDOW.length - 2]
-    HISTORY_WINDOW.splice(HISTORY_WINDOW.length - 1, 1)
-    if (!last) return;
-    await redirectToAndDrawPage(last.type || 'list', last.id || START_TAG, last.page || 0, false) 
-  })
+  const footer = document.querySelector('.footer') 
+  const loader = drawElem(footer, 'div', null, 'loader-spin')
 
   document.addEventListener('DOMContentLoaded', async () => {
     const links = document.querySelectorAll('.nav-item')
     links.forEach((link) => {
       link.addEventListener('click', () => {
-        redirectToAndDrawPage(NAV[link.id].type, NAV[link.id].id, 0)
+        window.location.href = `?${NAV[link.id].type}=${NAV[link.id].id}`
       })
     })
 
     appData = await loadJson(PATH_TO_DATA)
 
-    redirectToAndDrawPage()
+    const { page = 0, type = 'list', id = START_TAG } = parseUrlParams()
+
+
+    redrawMainMenu(type, id)
+    if (type === 'node') {
+      await drawNode(id)
+    }
+    if (type === 'list') {   
+        await drawList(id, page)
+    }
+    footer.removeChild(loader)
   })
 })()
