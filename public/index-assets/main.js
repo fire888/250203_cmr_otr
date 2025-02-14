@@ -1,7 +1,7 @@
 (() => {
   /*********** Глобальные переменные и состояния *****************************/
   const START_TAG = 'code'
-  const NUM_NODES_IN_LIST = 20
+  const NUM_NODES_IN_LIST = 24
   const OFFSET_W = 5
   let w, h, minKey
   let appData = null
@@ -129,7 +129,7 @@
     const elem = document.createElement('div')
     elem.style.minHeight = h + 'px'
     wrapper.appendChild(elem)
-}
+  }
 
   /*********** Рисование контейнеров *****************************************/
 
@@ -181,7 +181,7 @@
     }
   }
 
-  const drawList = async (listId, pageNum = 0) => {
+  const drawList = async (listId, pageNum = 0) => {    
     const nodes = appData.nodes
       .filter((n) => n.isPublished)
       .filter((n) => n.tags?.includes(listId))
@@ -198,7 +198,9 @@
       }
     } else {
       for (let i = startIndex; i < endIndex; ++i) {
-        if (breakerListDraw.checkIsMustBreak()) return;
+        if (breakerListDraw.checkIsMustBreak()) { 
+          return;
+        }
         if (!nodes[i]) break;
         const node = nodes[i]
         if (node.content[0] && node.content[0].type === 'img') {
@@ -242,12 +244,22 @@
       window.history.replaceState({ type, id, page: pageNum }, '', `?${type}=${id}&page=${pageNum}`)
     }
     const { nodeId, listId, page } = parseUrlParams()
+
+    let footer, loader
+    if (listId || nodeId) {
+      footer = document.querySelector('.footer') 
+      loader = drawElem(footer, 'div', null, 'loader-spin')
+
+    }
     if (nodeId) {
         await drawNode(nodeId)
     }
     redrawMainMenu(type, id)
     if (listId) {    
         await drawList(listId, page)
+    }
+    if (footer && loader) {
+      footer.removeChild(loader)
     }
     // clear blocker for new loading if it exists
     breakerListDraw.setIsUpdateInProcess(false)

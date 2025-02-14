@@ -74,6 +74,7 @@
             gap: 15px;
             max-width: 870px;
             margin: 0 auto;
+            padding: 0 20px;
         }
         .view-list-item {
             flex: 1 1 270px; 
@@ -106,10 +107,11 @@
         }
         @media screen and (max-width: 768px) {
           .view-list-item {
+            padding: 0;
               flex: 1 1 40%;
           }
           .view-list {
-            gap: 5px;
+            gap: 0;
           }
         }
         /* @media screen and (max-width: 480px) {
@@ -140,6 +142,30 @@
         .red-button:hover {
           background: rgb(146, 0, 0);
           color: #fff;
+        }
+        .loader-wrapper {
+          text-align: center;
+        }
+        .loader-spin {
+          border: 8px solid #f3f3f3;
+          border-top: 8px solid #3498db;
+          border-radius: 50%;
+          width: 30px;
+          height: 30px;
+          animation: spin 2s linear infinite;
+          margin: 0;
+          padding: 0;
+          min-width: 30px;
+          min-height: 30px;
+          display: block;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .footer {
+          display: flex;
+          justify-content: center;
         }
     </style>
   </head>
