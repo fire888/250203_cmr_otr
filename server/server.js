@@ -5,7 +5,7 @@ const fs = require("fs/promises")
 const multer = require('multer')
 
 const app = express()
-const PORT = 3000
+const PORT = 8080
 
 const UPLOAD_IMAGE_DIR = path.join(__dirname, '../public/index-assets/content')
 const DELETE_DIR_IMAGE_DIR = './public/index-assets/content/'
