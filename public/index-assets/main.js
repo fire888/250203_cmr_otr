@@ -214,8 +214,10 @@
 
     appData = await loadJson(PATH_TO_DATA)
 
-    const { page = 0, type = 'list', id = START_TAG } = parseUrlParams()
-
+    let { page, type, id } = parseUrlParams()
+    if (!page) page = 0
+    if (!type) type = 'list'
+    if (!id) id = 'code'
 
     redrawMainMenu(type, id)
     if (type === 'node') {

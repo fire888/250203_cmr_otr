@@ -32,21 +32,30 @@
             float: right;
         }
         .nav-item {
-            background-color: rgb(255, 255, 255);
-            border: 5px solid rgb(255, 255, 255);
-            box-shadow: 0 0 0 7px rgb(146, 0, 0);
-            max-width: 17px;
-            max-height: 17px;
-            min-width: 17px;
-            min-height: 17px;
-            margin: 15px;
-        }
-        .nav-item.current {
-            background-color: rgb(146, 0, 0);
+            max-width: 27px;
+            max-height: 27px;
+            min-width: 27px;
+            min-height: 27px;
+            margin: 7px;
+            padding: 7px;
         }
         .view-list-item:hover,
         .nav-item:hover {
             cursor: pointer;
+        }
+        .nav-style {
+          display: block;
+          background-color: rgb(255, 255, 255);
+          border: 5px solid rgb(255, 255, 255);
+          box-shadow: 0 0 0 7px rgb(146, 0, 0);
+          max-width: 100%;
+          max-height: 100%;
+          min-width: 100%;
+          min-height: 100%;
+          box-sizing: border-box;
+        }
+        .nav-item.current .nav-style {
+          background-color: rgb(146, 0, 0);
         }
         .content {
             display: flex;
@@ -173,11 +182,11 @@
   <body>
     <div class="app">
       <div class ="nav">
-        <div id="code" class="nav-item"></div>
-        <div id="zbrush" class="nav-item"></div>
-        <div id="design" class="nav-item"></div>
-        <div id="art" class="nav-item"></div>
-        <div id="me" class="nav-item"></div>
+        <div id="code" class="nav-item"><div class="nav-style"></div></div>
+        <div id="zbrush" class="nav-item"><div class="nav-style"></div></div>
+        <div id="design" class="nav-item"><div class="nav-style"></div></div>
+        <div id="art" class="nav-item"><div class="nav-style"></div></div>
+        <div id="me" class="nav-item"><div class="nav-style"></div></div>
       </div>
       <div class="content"></div>
       <div class="footer"></div>
