@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon server/server.js",
+    "dev": "nodemon server/server-edit.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "toGHP": "cd dev && node moveToGitPages.js",
     "cleanImages": "cd dev && node cleanerFolderImages.js"
