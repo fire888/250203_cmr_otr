@@ -618,35 +618,58 @@ const formsEditNode = async (nodeId = null) => {
         const imgInput = drawInput(wr, 'file')
         imgInput.accept = 'image/*';
         imgInput.addEventListener('change', e => {
-            const file = e.target.files[0]
+            const file = e.target.files[0];
             if (!file) return;
+        
             const reader = new FileReader()
             reader.addEventListener('load', (e) => {
-                showImage.src = e.target.result
-            })
+                const img = new Image();
+                img.src = e.target.result;
+        
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+        
+                    // Устанавливаем размеры canvas равными размерам изображения
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+        
+                    // Рисуем изображение на canvas
+                    ctx.drawImage(img, 0, 0);
+        
+                    // Преобразуем изображение в WebP
+                    canvas.toBlob((blob) => {
+                        const webpFile = new File([blob], getFormattedDate() + '_c.webp', { type: 'image/webp' });
+        
+                        // Отображаем преобразованное изображение
+                        showImage.src = URL.createObjectURL(webpFile);
+        
+                        const fileName = getFormattedDate() + '_c.webp';
+                        const formData = new FormData();
+                        formData.append('file', webpFile, fileName);
+        
+                        const newDataCandidate = {
+                            contentId,
+                            type: 'img',
+                            src: IMG_SAVE_PATH + fileName,
+                            fileName,
+                            formData,
+                        };
+        
+                        if (existContentElem) {
+                            existContentElem.newDataCandidate = newDataCandidate;
+                        } else {
+                            nodeData.content.push({
+                                contentId,
+                                newDataCandidate,
+                            });
+                        }
+                    }, 'image/webp', 0.8); // Качество WebP (0.8 = 80%)
+                };
+            });
+        
             reader.readAsDataURL(file)
-      
-            const fileName = getFormattedDate() + '_c.jpg'
-            const formData = new FormData()
-            formData.append('file', file, fileName)
-
-            const newDataCandidate = {
-                contentId, 
-                type: 'img', 
-                src: IMG_SAVE_PATH + fileName, 
-                fileName, 
-                formData, 
-            }
-
-            if (existContentElem) {
-                existContentElem.newDataCandidate = newDataCandidate
-            } else {
-                nodeData.content.push({ 
-                    contentId, 
-                    newDataCandidate, 
-                }) 
-            }    
-        })
+        });
         drawEmptyLine(wr, 1)
         drawElem('button', wr, '✖️').addEventListener('click', async () => {
             const isOk = await drawAlert()
@@ -704,10 +727,10 @@ const formsEditNode = async (nodeId = null) => {
 
                 const convertImg = (canvas) => {
                     return new Promise(res => {
-                        canvas.toBlob((blob) => { res(blob) }, 'image/jpeg', 1)
+                        canvas.toBlob((blob) => { res(blob) }, 'image/webp', .85)
                     })
                 }
-                const fileName = getFormattedDate() + '_pr.jpg'
+                const fileName = getFormattedDate() + '_pr.webp'
                 const blob = await convertImg(nodeData.preview.imageCandidate.canvasPreview)
                 const formData = new FormData()
                 formData.append('file', blob, fileName)
@@ -741,6 +764,8 @@ const formsEditNode = async (nodeId = null) => {
                     if (resultPost === 'upload successful') {
                         nodeData.content[i] = contentItem.newDataCandidate
                         delete nodeData.content[i].formData
+                        delete nodeData.content[i].message
+                        delete nodeData.content[i].fileName
                     }
                 }
             }
